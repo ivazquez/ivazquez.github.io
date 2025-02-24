@@ -481,6 +481,31 @@ ninja.data = [{
           description: "another project with an image 🎉",
           section: "Projects",handler: () => {
               window.location.href = "/projects/9_project/";
+            },},{id: "projects-druv-patel",
+          title: 'Druv Patel',
+          description: "2019 MSK Computational Biology Summer Program; Data Engineer, MSK-MIND",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/druv_patel/";
+            },},{id: "projects-ignacio-vazquez-garcia",
+          title: 'Ignacio Vazquez-Garcia',
+          description: "Principal Investigator",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/ignacio_vazquez-garcia/";
+            },},{id: "projects-julie-tran",
+          title: 'Julie Tran',
+          description: "2023 MSK Computational Biology Summer Program",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/julie_tran/";
+            },},{id: "projects-rhea-malhotra",
+          title: 'Rhea Malhotra',
+          description: "2022 MSK Computational Biology Summer Program",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/rhea_malhotra/";
+            },},{id: "projects-susan-smith",
+          title: 'Susan Smith',
+          description: "Administrative Director",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/susan_smith/";
             },},{
         id: 'social-email',
         title: 'email',
