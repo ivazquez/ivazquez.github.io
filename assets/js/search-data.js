@@ -481,6 +481,11 @@ ninja.data = [{
           description: "another project with an image 🎉",
           section: "Projects",handler: () => {
               window.location.href = "/projects/9_project/";
+            },},{id: "projects-adam-weiner",
+          title: 'Adam Weiner',
+          description: "PhD Student - Tri-I PhD Program Computational Biology and Medicine",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/adam_weiner/";
             },},{id: "projects-druv-patel",
           title: 'Druv Patel',
           description: "2019 MSK Computational Biology Summer Program; Data Engineer, MSK-MIND",
