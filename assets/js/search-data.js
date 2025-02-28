@@ -496,6 +496,11 @@ ninja.data = [{
           description: "Principal Investigator",
           section: "Projects",handler: () => {
               window.location.href = "/projects/ignacio_vazquez-garcia/";
+            },},{id: "projects-jeffrey-wang",
+          title: 'Jeffrey Wang',
+          description: "Undergraduate Intern",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/jeffrey_wang/";
             },},{id: "projects-julie-tran",
           title: 'Julie Tran',
           description: "2023 MSK Computational Biology Summer Program",
