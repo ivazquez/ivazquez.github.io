@@ -511,6 +511,11 @@ ninja.data = [{
           description: "2024 Fulbright Scholar, Memorial Sloan Kettering Cancer Center",
           section: "Projects",handler: () => {
               window.location.href = "/projects/nuria_gendrau-sanclemente/";
+            },},{id: "projects-oprah-nkera",
+          title: 'Oprah Nkera',
+          description: "DF/HCC CURE Program",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/oprah_nkera/";
             },},{id: "projects-rhea-malhotra",
           title: 'Rhea Malhotra',
           description: "2022 MSK Computational Biology Summer Program",
