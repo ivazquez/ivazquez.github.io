@@ -506,6 +506,11 @@ ninja.data = [{
           description: "2023 MSK Computational Biology Summer Program",
           section: "Projects",handler: () => {
               window.location.href = "/projects/julie_tran/";
+            },},{id: "projects-megan-tandar",
+          title: 'Megan Tandar',
+          description: "Broad Summer Research Program",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/megan_tandar/";
             },},{id: "projects-núria-gendrau-sanclemente",
           title: 'Núria Gendrau-Sanclemente',
           description: "2024 Fulbright Scholar, Memorial Sloan Kettering Cancer Center",
