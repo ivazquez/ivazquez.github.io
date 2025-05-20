@@ -204,6 +204,11 @@ ninja.data = [{
           description: "Administrative Director",
           section: "Projects",handler: () => {
               window.location.href = "/projects/susan_smith/";
+            },},{id: "projects-xiwen-zhang",
+          title: 'Xiwen Zhang',
+          description: "Undergraduate Intern",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/xiwen_zhang/";
             },},{
         id: 'social-email',
         title: 'email',
