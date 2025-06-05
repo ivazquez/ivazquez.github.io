@@ -191,7 +191,7 @@ ninja.data = [{
               window.location.href = "/projects/nuria_gendrau-sanclemente/";
             },},{id: "projects-oprah-nkera",
           title: 'Oprah Nkera',
-          description: "DF/HCC CURE Program",
+          description: "DF/HCC YES for CURE Program",
           section: "Projects",handler: () => {
               window.location.href = "/projects/oprah_nkera/";
             },},{id: "projects-rhea-malhotra",
