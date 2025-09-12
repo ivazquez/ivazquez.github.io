@@ -179,6 +179,11 @@ ninja.data = [{
           description: "2023 MSK Computational Biology Summer Program",
           section: "Projects",handler: () => {
               window.location.href = "/projects/julie_tran/";
+            },},{id: "projects-kit-gallagher",
+          title: 'Kit Gallagher',
+          description: "Incoming Research Fellow",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/kit_gallagher/";
             },},{id: "projects-megan-tandar",
           title: 'Megan Tandar',
           description: "Broad Summer Research Program",
