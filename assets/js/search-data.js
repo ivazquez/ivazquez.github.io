@@ -171,7 +171,7 @@ ninja.data = [{
               window.location.href = "/projects/ignacio_vazquez-garcia/";
             },},{id: "projects-jeffrey-wang",
           title: 'Jeffrey Wang',
-          description: "Undergraduate Intern",
+          description: "Summer Undergraduate Intern",
           section: "Projects",handler: () => {
               window.location.href = "/projects/jeffrey_wang/";
             },},{id: "projects-julie-tran",
@@ -209,9 +209,14 @@ ninja.data = [{
           description: "Administrative Director",
           section: "Projects",handler: () => {
               window.location.href = "/projects/susan_smith/";
+            },},{id: "projects-vrishank-chandrasekhar",
+          title: 'Vrishank Chandrasekhar',
+          description: "Undergraduate Intern",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/vrishank_chandrasekhar/";
             },},{id: "projects-xiwen-zhang",
           title: 'Xiwen Zhang',
-          description: "Undergraduate Intern",
+          description: "Summer Undergraduate Intern",
           section: "Projects",handler: () => {
               window.location.href = "/projects/xiwen_zhang/";
             },},{
