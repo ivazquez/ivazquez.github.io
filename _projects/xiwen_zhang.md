@@ -3,7 +3,7 @@ layout: page
 title: Xiwen Zhang
 description: Summer Undergraduate Intern
 img: assets/img/Xiwen_Zhang.jpg
-importance: 7
+importance: 3
 category: alumni
 related_publications: false
 ---
