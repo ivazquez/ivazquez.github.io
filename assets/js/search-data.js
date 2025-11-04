@@ -181,7 +181,7 @@ ninja.data = [{
               window.location.href = "/projects/julie_tran/";
             },},{id: "projects-kit-gallagher",
           title: 'Kit Gallagher',
-          description: "Incoming Research Fellow",
+          description: "Research Fellow",
           section: "Projects",handler: () => {
               window.location.href = "/projects/kit_gallagher/";
             },},{id: "projects-megan-tandar",
