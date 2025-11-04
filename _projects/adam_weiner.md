@@ -3,7 +3,7 @@ layout: page
 title: Adam Weiner
 description: PhD Student - Tri-I PhD Program Computational Biology and Medicine
 img: assets/img/Adam_Weiner.png
-importance: 4
+importance: 5
 category: alumni
 related_publications: false
 ---

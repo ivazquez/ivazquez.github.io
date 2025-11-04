@@ -3,8 +3,8 @@ layout: page
 title: Megan Tandar
 description: Broad Summer Research Program
 img: assets/img/Megan_Tandar.jpg
-importance: 5
-category: current
+importance: 2
+category: alumni
 related_publications: false
 ---
 

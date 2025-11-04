@@ -3,7 +3,7 @@ layout: page
 title: Rhea Malhotra
 description: 2022 MSK Computational Biology Summer Program
 img: assets/img/Rhea_Malhotra.png
-importance: 7
+importance: 8
 category: alumni
 related_publications: false
 ---

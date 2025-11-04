@@ -3,7 +3,7 @@ layout: page
 title: Jeffrey Wang
 description: Summer Undergraduate Intern
 img: assets/img/Jeffrey_Wang.jpg
-importance: 2
+importance: 3
 category: alumni
 related_publications: false
 ---

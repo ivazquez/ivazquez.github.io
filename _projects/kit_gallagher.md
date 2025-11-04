@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Kit Gallagher
-description: Incoming Research Fellow
+description: Research Fellow
 img: assets/img/Kit_Gallagher.jpg
 importance: 3
 category: current
