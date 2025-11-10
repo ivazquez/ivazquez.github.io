@@ -164,6 +164,11 @@ ninja.data = [{
           description: "2019 MSK Computational Biology Summer Program; Data Engineer, MSK-MIND",
           section: "Projects",handler: () => {
               window.location.href = "/projects/druv_patel/";
+            },},{id: "projects-giles-xu",
+          title: 'Giles Xu',
+          description: "Master&#39;s Student",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/giles_xu/";
             },},{id: "projects-ignacio-vazquez-garcia",
           title: 'Ignacio Vazquez-Garcia',
           description: "Principal Investigator",
