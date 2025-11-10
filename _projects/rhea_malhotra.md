@@ -8,6 +8,6 @@ category: alumni
 related_publications: false
 ---
 
-**Previous:** Undergraduate student - Stanford University (Computer Science)
+**Previous:** Undergraduate Student - Stanford University (Computer Science)
 
-**Current:** Masters student - Stanford University (Computer Science)
+**Current:** Master's Student - Stanford University (Computer Science)
