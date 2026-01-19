@@ -171,6 +171,11 @@ ninja.data = [{
           description: "PhD Student - Tri-I PhD Program Computational Biology and Medicine",
           section: "Projects",handler: () => {
               window.location.href = "/projects/adam_weiner/";
+            },},{id: "projects-curie-cha",
+          title: 'Curie Cha',
+          description: "Undergraduate Intern",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/curie_cha/";
             },},{id: "projects-druv-patel",
           title: 'Druv Patel',
           description: "2019 MSK Computational Biology Summer Program; Data Engineer, MSK-MIND",
