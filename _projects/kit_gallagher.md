@@ -3,7 +3,7 @@ layout: page
 title: Kit Gallagher
 description: Research Fellow
 img: assets/img/Kit_Gallagher.jpg
-importance: 3
+importance: 4
 category: current
 related_publications: false
 ---

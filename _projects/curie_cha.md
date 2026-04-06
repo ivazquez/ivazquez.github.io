@@ -3,7 +3,7 @@ layout: page
 title: Curie Cha
 description: Undergraduate Intern
 img: assets/img/Curie_Cha.jpg
-importance: 5
+importance: 6
 category: current
 related_publications: false
 ---
