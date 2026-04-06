@@ -3,7 +3,7 @@ layout: page
 title: Giles Xu
 description: Master's Student
 img: assets/img/Giles_Xu.jpg
-importance: 4
+importance: 5
 category: current
 related_publications: false
 ---
