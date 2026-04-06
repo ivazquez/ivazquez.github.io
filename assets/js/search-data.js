@@ -177,6 +177,11 @@ ninja.data = [{
           description: "PhD Student - Tri-I PhD Program Computational Biology and Medicine",
           section: "Projects",handler: () => {
               window.location.href = "/projects/adam_weiner/";
+            },},{id: "projects-anna-peters",
+          title: 'Anna Peters',
+          description: "Lab Manager",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/anna_peters/";
             },},{id: "projects-curie-cha",
           title: 'Curie Cha',
           description: "Undergraduate Intern",
