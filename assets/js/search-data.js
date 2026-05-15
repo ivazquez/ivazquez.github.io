@@ -182,6 +182,11 @@ ninja.data = [{
           description: "Lab Manager",
           section: "Projects",handler: () => {
               window.location.href = "/projects/anna_peters/";
+            },},{id: "projects-camille-tyriard",
+          title: 'Camille Tyriard',
+          description: "Master&#39;s Student",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/camille_tyriard/";
             },},{id: "projects-curie-cha",
           title: 'Curie Cha',
           description: "Undergraduate Intern",
