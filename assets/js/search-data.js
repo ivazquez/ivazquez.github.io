@@ -198,7 +198,7 @@ ninja.data = [{
               window.location.href = "/projects/camille_tyriard/";
             },},{id: "projects-curie-cha",
           title: 'Curie Cha',
-          description: "Undergraduate Intern",
+          description: "Research Associate",
           section: "Projects",handler: () => {
               window.location.href = "/projects/curie_cha/";
             },},{id: "projects-druv-patel",
@@ -228,17 +228,17 @@ ninja.data = [{
               window.location.href = "/projects/julie_tran/";
             },},{id: "projects-kit-gallagher",
           title: 'Kit Gallagher',
-          description: "Research Fellow",
+          description: "Postdoctoral Fellow, Schmidt Science Fellow",
           section: "Projects",handler: () => {
               window.location.href = "/projects/kit_gallagher/";
             },},{id: "projects-megan-tandar",
           title: 'Megan Tandar',
-          description: "Broad Summer Research Program",
+          description: "2025 Broad Summer Research Program",
           section: "Projects",handler: () => {
               window.location.href = "/projects/megan_tandar/";
             },},{id: "projects-michail-andreopoulos",
           title: 'Michail Andreopoulos',
-          description: "PhD Student (Rotation) - Bioinformatics and Integrative Genomics, Harvard Medical School",
+          description: "PhD Student (Rotation) - Harvard Medical School, Bioinformatics and Integrative Genomics",
           section: "Projects",handler: () => {
               window.location.href = "/projects/michail_andreopoulos/";
             },},{id: "projects-núria-gendrau-sanclemente",
@@ -248,7 +248,7 @@ ninja.data = [{
               window.location.href = "/projects/nuria_gendrau-sanclemente/";
             },},{id: "projects-oprah-nkera",
           title: 'Oprah Nkera',
-          description: "DF/HCC YES for CURE Program",
+          description: "2025 DF/HCC YES for CURE Program",
           section: "Projects",handler: () => {
               window.location.href = "/projects/oprah_nkera/";
             },},{id: "projects-rhea-malhotra",
@@ -263,7 +263,7 @@ ninja.data = [{
               window.location.href = "/projects/susan_smith/";
             },},{id: "projects-vrishank-chandrasekhar",
           title: 'Vrishank Chandrasekhar',
-          description: "Undergraduate Intern",
+          description: "Undergraduate Student",
           section: "Projects",handler: () => {
               window.location.href = "/projects/vrishank_chandrasekhar/";
             },},{id: "projects-xiwen-zhang",
