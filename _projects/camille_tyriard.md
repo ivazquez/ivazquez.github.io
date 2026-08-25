@@ -3,7 +3,7 @@ layout: page
 title: Camille Tyriard
 description: Master's Student
 img: assets/img/Camille_Tyriard.jpg
-importance: 5
+importance: 7
 category: current
 related_publications: false
 ---

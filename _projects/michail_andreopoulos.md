@@ -1,9 +1,9 @@
 ---
 layout: page
 title: Michail Andreopoulos
-description: PhD Student (Rotation) - Bioinformatics and Integrative Genomics, Harvard Medical School
+description: PhD Student (Rotation) - Harvard Medical School, Bioinformatics and Integrative Genomics
 img: assets/img/Michail_Andreopoulos.jpg
-importance: 4
+importance: 5
 category: current
 related_publications: false
 ---

@@ -8,6 +8,6 @@ category: alumni
 related_publications: false
 ---
 
-**Previous:** Undergraduate student - University of Texas Austin (Computer Science)
+**Previous:** Undergraduate Student - University of Texas Austin (Computer Science)
 
-**Current:** Medical student - University of Texas San Antonio
+**Current:** Medical Student - University of Texas San Antonio

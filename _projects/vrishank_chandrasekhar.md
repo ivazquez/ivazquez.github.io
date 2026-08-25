@@ -1,9 +1,9 @@
 ---
 layout: page
 title: Vrishank Chandrasekhar
-description: Undergraduate Intern
+description: Undergraduate Student
 img: assets/img/Vrishank_Chandrasekhar.jpg
-importance: 7
+importance: 8
 category: current
 related_publications: false
 ---
