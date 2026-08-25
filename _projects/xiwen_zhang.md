@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Xiwen Zhang
-description: Summer Undergraduate Intern
+description: 2025 Summer Undergraduate Intern
 img: assets/img/Xiwen_Zhang.jpg
 importance: 4
 category: alumni
