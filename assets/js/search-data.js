@@ -236,6 +236,11 @@ ninja.data = [{
           description: "Broad Summer Research Program",
           section: "Projects",handler: () => {
               window.location.href = "/projects/megan_tandar/";
+            },},{id: "projects-michail-andreopoulos",
+          title: 'Michail Andreopoulos',
+          description: "PhD Student (Rotation) - Bioinformatics and Integrative Genomics, Harvard Medical School",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/michail_andreopoulos/";
             },},{id: "projects-núria-gendrau-sanclemente",
           title: 'Núria Gendrau-Sanclemente',
           description: "2024 Fulbright Scholar, Memorial Sloan Kettering Cancer Center",
