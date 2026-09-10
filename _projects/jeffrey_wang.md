@@ -3,7 +3,7 @@ layout: page
 title: Jeffrey Wang
 description: 2025 Summer Undergraduate Intern
 img: assets/img/Jeffrey_Wang.jpg
-importance: 3
+importance: 4
 category: alumni
 related_publications: false
 ---

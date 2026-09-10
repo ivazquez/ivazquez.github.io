@@ -3,7 +3,7 @@ layout: page
 title: Julie Tran
 description: 2023 MSK Computational Biology Summer Program
 img: assets/img/Julie_Tran.jpg
-importance: 7
+importance: 8
 category: alumni
 related_publications: false
 ---

@@ -3,7 +3,7 @@ layout: page
 title: Núria Gendrau-Sanclemente
 description: 2024 Fulbright Scholar, Memorial Sloan Kettering Cancer Center
 img: assets/img/Nuria_Gendrau-Sanclemente.jpg
-importance: 6
+importance: 7
 category: alumni
 related_publications: false
 ---

@@ -3,7 +3,7 @@ layout: page
 title: Oprah Nkera
 description: 2025 DF/HCC YES for CURE Program
 img: assets/img/Oprah_Nkera.jpg
-importance: 1
+importance: 2
 category: alumni
 related_publications: false
 ---

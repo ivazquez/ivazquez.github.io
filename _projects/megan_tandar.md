@@ -3,7 +3,7 @@ layout: page
 title: Megan Tandar
 description: 2025 Broad Summer Research Program
 img: assets/img/Megan_Tandar.jpg
-importance: 2
+importance: 3
 category: alumni
 related_publications: false
 ---

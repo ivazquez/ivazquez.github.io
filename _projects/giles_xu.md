@@ -3,8 +3,8 @@ layout: page
 title: Giles Xu
 description: Master's Student
 img: assets/img/Giles_Xu.jpg
-importance: 7
-category: current
+importance: 1
+category: alumni
 related_publications: false
 ---
 
