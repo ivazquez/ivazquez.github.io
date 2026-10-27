@@ -1,1 +1,1 @@
-User-agent: * Disallow: Sitemap: https://vazquezgarcialab.mgh.harvard.edu/sitemap.xml
+User-agent: * Disallow: /collaboratory/ Sitemap: https://vazquezgarcialab.mgh.harvard.edu/sitemap.xml
