@@ -1,0 +1,1329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<style>[hidden] { display: none !important; }</style>
+<title>Cancer Data Collaboratory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: white app bar → compact light intro (stats | coverage map) → views. The dataset view follows
+   cBioPortal's study view: cross-filtering summary charts above a cards/table result list.
+   Deliberately single-theme (light), like cBioPortal: every color is set explicitly. */
+:root {
+  color-scheme: light;
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --sunk: #f1f3f5;
+  --ink: #222b35;
+  --ink-2: #4a5562;
+  --muted: #747f8b;
+  --line: #dde2e7;
+  --line-2: #c9d0d7;
+  --brand: #1a5d9c;
+  --brand-2: #1a5d9c;
+  --navy: #1f2d3d;
+  --accent: #2986e2;
+  --accent-ink: #ffffff;
+  --accent-wash: #e8f2fc;
+  --teal: #1a8a8f;
+  --teal-wash: #e1f3f3;
+  --mint: #2986e2;
+  --mint-hover: #1f73c7;
+  --hot: #f88508;
+  --hot-wash: #fff2e2;
+  --ok: #2b8a3e;
+  --ok-wash: #e6f4e8;
+  --warn: #a8640a;
+  --warn-wash: #fdf1df;
+  --core-empty: #f1f3f5;
+  --s1: #d6e8fa; --s2: #a9cef3; --s3: #75b0ec; --s4: #3f8fe0; --s5: #2273c4; --s6: #17569a;
+  --bar: #2986e2;
+  --bar-on: #17569a;
+  --focus: #2986e2;
+  --grid: rgba(34,43,53,.05);
+  --glow: transparent;
+  --hero-bg: #ffffff;
+  --hero-ink: #222b35;
+  --hero-2: #747f8b;
+  --hero-line: #dde2e7;
+  --shadow-sm: 0 1px 2px rgba(34,43,53,.06);
+  --shadow: 0 1px 3px rgba(34,43,53,.08);
+  --shadow-lg: 0 16px 48px -16px rgba(34,43,53,.3);
+  --f-display: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --f-body: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --f-mono: "Roboto Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --r: 6px;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 14px/1.55 var(--f-body); margin: 0; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1280px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+a { color: var(--accent); text-underline-offset: 3px; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+.mono { font-family: var(--f-mono); font-size: 12px; letter-spacing: -.01em; }
+.muted { color: var(--muted); }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+.eyebrow { font: 500 11.5px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+
+/* ---------- app bar ---------- */
+.appbar { position: sticky; top: 0; z-index: 10; padding-top: env(safe-area-inset-top, 0px); background: color-mix(in oklab, var(--bg) 82%, transparent); backdrop-filter: saturate(1.4) blur(14px); -webkit-backdrop-filter: saturate(1.4) blur(14px); border-bottom: 1px solid var(--line); }
+.appbar .wrap { display: flex; align-items: center; gap: 18px; height: 58px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -.01em; white-space: nowrap; text-decoration: none; color: var(--ink); }
+.mark { display: grid; grid-template-columns: repeat(2, 9px); gap: 3px; flex: none; }
+.mark i { width: 9px; height: 9px; border-radius: 2.5px; background: var(--ink); }
+.mark i:nth-child(2) { background: var(--accent); }
+.mark i:nth-child(3) { opacity: .35; }
+.tabs { display: flex; gap: 2px; padding: 3px; background: var(--sunk); border-radius: 10px; overflow-x: auto; scrollbar-width: none; min-width: 0; }
+.tabs button { border: 0; background: none; padding: 6px 12px; border-radius: 7px; font-weight: 500; color: var(--ink-2); cursor: pointer; white-space: nowrap; display: inline-flex; gap: 6px; align-items: baseline; }
+.tabs button:hover { color: var(--ink); }
+.tabs button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-sm); }
+.tabs .ct { font: 500 11px var(--f-mono); color: var(--muted); }
+.kbtn { margin-left: auto; display: inline-flex; align-items: center; gap: 10px; border: 1px solid var(--line-2); background: var(--surface); border-radius: 9px; padding: 6px 8px 6px 12px; color: var(--muted); cursor: pointer; min-width: 220px; box-shadow: var(--shadow-sm); }
+.kbtn:hover { border-color: var(--accent); color: var(--ink-2); }
+.kbtn kbd { margin-left: auto; font: 500 11px var(--f-mono); border: 1px solid var(--line-2); border-radius: 5px; padding: 1px 6px; color: var(--muted); background: var(--sunk); }
+
+/* ---------- hero ---------- */
+.hero { position: relative; border-bottom: 1px solid var(--line); overflow: hidden; }
+.hero::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 40px 40px; mask-image: radial-gradient(ellipse 80% 70% at 30% 0%, #000 30%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse 80% 70% at 30% 0%, #000 30%, transparent 75%); pointer-events: none; }
+
+.hero .wrap { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); gap: 48px; padding-block: 48px 40px; align-items: center; }
+.hero h1 { font: 500 clamp(30px, 3.4vw, 44px)/1.12 var(--f-display); letter-spacing: -.035em; margin-top: 20px; max-width: 18ch; }
+.hero h1 > span { display: block; color: var(--muted); }
+.pill { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px 4px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font-size: 12px; color: var(--ink-2); letter-spacing: -.005em; }
+.pill i { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px var(--ok-wash); }
+.lede { margin: 18px 0 0; color: var(--muted); font-size: 14px; max-width: 50ch; }
+.figs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; margin-top: 30px; border-top: 1px solid var(--line); }
+.fig { padding: 14px 16px 0 0; }
+.fig + .fig { padding-left: 16px; border-left: 1px solid var(--line); }
+.fig b { display: block; font: 500 26px/1.15 var(--f-body); letter-spacing: -.035em; font-variant-numeric: tabular-nums; }
+.fig span { font-size: 12.5px; color: var(--muted); }
+.fig small { display: block; font: 500 11px var(--f-mono); color: var(--muted); margin-top: 4px; }
+.progress { margin-top: 22px; display: flex; align-items: center; gap: 12px; font-size: 12.5px; color: var(--ink-2); }
+.progress .track { flex: 1; max-width: 240px; height: 6px; border-radius: 3px; background: var(--sunk); overflow: hidden; }
+.progress .track i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+
+/* tissue microarray */
+.slide { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 18px 18px 14px; min-width: 0; }
+.slide header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+.slide h2 { font: 500 13.5px var(--f-body); letter-spacing: -.01em; }
+.slide .legend { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--muted); }
+.slide .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.tma { overflow-x: auto; }
+.tma svg { display: block; min-width: 470px; width: 100%; height: auto; }
+.tma .core { cursor: pointer; transition: transform .12s ease, filter .12s; transform-box: fill-box; transform-origin: center; }
+.tma .core:hover, .tma .core:focus-visible { transform: scale(1.12); filter: brightness(1.08); outline: none; stroke: var(--ink); stroke-width: 1.5; }
+.tma .core.empty { cursor: default; }
+.tma .core.empty:hover { transform: none; filter: none; stroke: none; }
+.tma text { fill: var(--ink-2); font: 500 10.5px var(--f-body); }
+.tma text.col { fill: var(--muted); font: 500 10px var(--f-mono); }
+.tip { position: fixed; z-index: 30; pointer-events: none; background: var(--ink); color: var(--bg); font-family: var(--f-body); font-size: 12px; padding: 7px 10px; border-radius: 8px; box-shadow: var(--shadow); max-width: 260px; }
+.tip b { display: block; font-weight: 600; }
+.slide footer { display: flex; justify-content: space-between; gap: 10px; margin-top: 6px; font-size: 11.5px; color: var(--muted); flex-wrap: wrap; }
+
+/* ---------- views ---------- */
+main { padding-block: 28px 80px; }
+.view[hidden] { display: none; }
+.section-head { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+.section-head h2 { font: 500 24px/1.2 var(--f-display); letter-spacing: -.03em; margin-top: 6px; }
+.section-head p { margin: 6px 0 0; color: var(--ink-2); max-width: 66ch; }
+.controls { display: flex; gap: 8px; flex-wrap: wrap; }
+.field { padding: 8px 12px; border: 1px solid var(--line-2); border-radius: 9px; background: var(--surface); min-width: 0; }
+.field:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-wash); }
+
+/* explore */
+.explore { display: grid; grid-template-columns: 236px minmax(0, 1fr); gap: 28px; align-items: start; }
+.rail { display: flex; flex-direction: column; gap: 20px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 74px); max-height: calc(100vh - 96px); overflow: auto; padding: 2px 6px 20px 2px; scrollbar-width: thin; }
+.rail .field { width: 100%; }
+.switches { display: grid; gap: 8px; }
+.switch { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 13px; color: var(--ink-2); cursor: pointer; }
+.switch input { appearance: none; -webkit-appearance: none; width: 30px; height: 18px; border-radius: 9px; background: var(--line-2); position: relative; cursor: pointer; transition: background .15s; flex: none; margin: 0; }
+.switch input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--surface); box-shadow: var(--shadow-sm); transition: transform .15s; }
+.switch input:checked { background: var(--accent); }
+.switch input:checked::after { transform: translateX(12px); }
+.facet h4 { margin: 0 0 8px; }
+.opt { display: flex; align-items: center; gap: 8px; padding: 4px 6px; margin: 0 -6px; border-radius: 7px; cursor: pointer; font-size: 13px; color: var(--ink-2); }
+.opt:hover { background: var(--sunk); color: var(--ink); }
+.opt input { appearance: none; -webkit-appearance: none; width: 15px; height: 15px; border: 1.5px solid var(--line-2); border-radius: 4px; margin: 0; flex: none; display: grid; place-content: center; cursor: pointer; background: var(--surface); }
+.opt input:checked { background: var(--accent); border-color: var(--accent); }
+.opt input:checked::after { content: ""; width: 8px; height: 4px; border: 2px solid var(--accent-ink); border-top: 0; border-right: 0; transform: rotate(-45deg) translate(1px, -1px); }
+.opt .n { margin-left: auto; font: 500 11px var(--f-mono); color: var(--muted); }
+.opt.on { color: var(--ink); }
+.more { background: none; border: 0; color: var(--accent); padding: 4px 0; cursor: pointer; font-size: 12.5px; font-weight: 500; }
+.filters-btn { display: none; }
+.resultbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.resultbar .count { font-size: 13px; color: var(--ink-2); }
+.resultbar .count b { font: 600 15px var(--f-body); color: var(--ink); font-variant-numeric: tabular-nums; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.chip { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 500; background: var(--sunk); color: var(--ink-2); border: 0; white-space: nowrap; line-height: 1.6; }
+button.chip { cursor: pointer; }
+button.chip:hover { background: var(--line); color: var(--ink); }
+.chip.mod { background: var(--accent-wash); color: var(--accent); }
+.chip.ct { background: transparent; color: var(--ink-2); box-shadow: inset 0 0 0 1px var(--line-2); }
+.chip.acc::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.acc-open { background: var(--ok-wash); color: var(--ok); }
+.acc-controlled { background: var(--warn-wash); color: var(--warn); }
+.acc-upon_request { background: var(--accent-wash); color: var(--accent); }
+.acc-not_stated { background: var(--sunk); color: var(--muted); }
+.chip.acc-id { font: 500 11.5px var(--f-mono); background: transparent; border: 1px solid var(--line-2); color: var(--ink-2); }
+
+.list { display: grid; gap: 10px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; cursor: pointer; display: grid; gap: 9px; text-align: left; width: 100%; box-shadow: var(--shadow-sm); transition: border-color .15s, box-shadow .15s, transform .15s; }
+.card:hover { border-color: var(--line-2); box-shadow: var(--shadow); transform: translateY(-1px); }
+.card .row1 { display: flex; gap: 12px; align-items: baseline; justify-content: space-between; }
+.card .title { font-weight: 500; font-size: 14.5px; letter-spacing: -.01em; min-width: 0; }
+.card .id { color: var(--muted); flex: none; }
+.card .foot { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 12.5px; min-width: 0; }
+.card .foot .paper { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.flag { font: 500 10.5px var(--f-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); border: 1px dashed var(--line-2); border-radius: 999px; padding: 1px 7px; }
+.avs { display: flex; flex: none; }
+.av { position: relative; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font: 600 9.5px var(--f-body); letter-spacing: .02em; border: 2px solid var(--surface); flex: none; overflow: hidden; }
+.av img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; }
+.avs .av + .av { margin-left: -6px; }
+.av.lg { width: 44px; height: 44px; font-size: 14px; border: 0; box-shadow: 0 0 0 1px var(--line); }
+.av.t0 { background: var(--accent-wash); color: var(--accent); }
+.av.t1 { background: var(--sunk); color: var(--ink-2); }
+.av.t2 { background: var(--accent); color: var(--accent-ink); }
+.av.t3 { background: var(--ink); color: var(--bg); }
+.av.t4 { background: var(--line); color: var(--ink); }
+.av.t5 { background: var(--accent-wash); color: var(--ink); }
+.showmore { margin: 14px auto 0; display: block; background: var(--surface); border: 1px solid var(--line-2); border-radius: 9px; padding: 8px 16px; cursor: pointer; font-weight: 500; }
+.empty { padding: 48px 20px; text-align: center; color: var(--muted); background: var(--surface); border: 1px dashed var(--line-2); border-radius: var(--r); }
+
+/* tables */
+.tablewrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow-sm); }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font: 500 11px var(--f-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); background: var(--sunk); position: sticky; top: 0; white-space: nowrap; }
+tr.click { cursor: pointer; }
+tr.click:hover td { background: var(--sunk); }
+.dots { display: flex; gap: 4px; }
+.dot { width: 11px; height: 11px; border-radius: 3px; background: var(--core-empty); box-shadow: inset 0 0 0 1px var(--line-2); }
+.dot.on { background: var(--accent); box-shadow: none; }
+
+/* opportunities */
+.opps { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); gap: 14px; }
+.opp { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; gap: 14px; align-content: start; box-shadow: var(--shadow-sm); }
+.opp h3 { font: 500 18px/1.25 var(--f-display); letter-spacing: -.02em; }
+.opp .sub { display: flex; gap: 14px; font: 500 11.5px var(--f-mono); color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-top: 4px; }
+.pair { display: grid; gap: 8px; padding: 12px; background: var(--sunk); border-radius: 10px; font-size: 13px; }
+.pair .who { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.pair .who .plus { color: var(--muted); }
+.pair .new { margin-left: auto; font: 600 10.5px var(--f-mono); color: var(--hot); text-transform: uppercase; letter-spacing: .06em; }
+.lablink { display: inline-flex; align-items: center; gap: 6px; background: none; border: 0; padding: 0; cursor: pointer; color: var(--ink); font-weight: 500; }
+.lablink:hover { color: var(--accent); }
+
+/* labs */
+.labs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 12px; }
+.lab { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 12px; cursor: pointer; text-align: left; box-shadow: var(--shadow-sm); transition: border-color .15s, box-shadow .15s, transform .15s; }
+.lab:hover { border-color: var(--line-2); box-shadow: var(--shadow); transform: translateY(-1px); }
+.lab .top { display: flex; gap: 12px; align-items: center; }
+.lab .nm { font-weight: 600; }
+.lab .dept { font-size: 12px; color: var(--muted); }
+.lab .nums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.lab .nums div { font-size: 11.5px; color: var(--muted); }
+.lab .nums b { display: block; font: 600 17px var(--f-body); color: var(--ink); font-variant-numeric: tabular-nums; }
+.bar { display: flex; height: 6px; border-radius: 3px; overflow: hidden; background: var(--sunk); gap: 2px; }
+.bar i { display: block; height: 100%; }
+.lab .mods { font-size: 12px; color: var(--ink-2); min-height: 18px; }
+
+/* drawer */
+.scrim { position: fixed; inset: 0; background: rgba(13,11,22,.32); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); z-index: 15; }
+.drawer { position: fixed; top: 10px; right: 10px; bottom: 10px; width: min(580px, calc(100% - 20px)); background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow-lg); z-index: 20; display: flex; flex-direction: column; margin-top: env(safe-area-inset-top, 0px); margin-bottom: env(safe-area-inset-bottom, 0px); margin-right: env(safe-area-inset-right, 0px); overflow: hidden; }
+.drawer > header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--line); gap: 10px; }
+.kind { font: 500 11px var(--f-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--accent); background: var(--accent-wash); padding: 3px 8px; border-radius: 999px; }
+.drawer .body { overflow: auto; padding: 20px 22px 32px; display: grid; gap: 20px; align-content: start; }
+.drawer h2 { font: 500 21px/1.25 var(--f-display); letter-spacing: -.025em; }
+.x { background: var(--sunk); border: 0; border-radius: 8px; padding: 6px 12px; cursor: pointer; font-weight: 500; }
+dl.kv { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 8px 14px; margin: 0; font-size: 13px; }
+dl.kv dt { color: var(--muted); }
+dl.kv dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+blockquote.ev { margin: 0; padding: 12px 14px; background: var(--sunk); border-left: 2px solid var(--accent); border-radius: 0 10px 10px 0; font-size: 13px; color: var(--ink-2); }
+.sub-h { margin-bottom: 8px; }
+.linklist { display: grid; gap: 2px; }
+.linklist button { background: none; border: 0; padding: 6px 8px; margin: 0 -8px; border-radius: 7px; color: var(--ink); cursor: pointer; text-align: left; font-size: 13px; }
+.linklist button:hover { background: var(--sunk); color: var(--accent); }
+
+/* corrections */
+.fix { border-top: 1px solid var(--line); padding-top: 18px; display: grid; gap: 10px; }
+.fix textarea, .fix select { width: 100%; }
+.btn { background: var(--ink); color: var(--bg); border: 0; border-radius: 9px; padding: 8px 16px; font-weight: 600; cursor: pointer; }
+.btn:hover { filter: brightness(1.08); }
+.btn:disabled { opacity: .55; cursor: default; }
+.btn.ghost { background: var(--sunk); color: var(--ink); }
+.toast { font-size: 13px; color: var(--ok); }
+.prior { font-size: 12.5px; color: var(--ink-2); display: grid; gap: 6px; }
+.prior div { padding: 8px 10px; background: var(--sunk); border-radius: 8px; }
+
+/* ask */
+.ask { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: start; }
+.chat { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; display: flex; flex-direction: column; min-height: 520px; box-shadow: var(--shadow); overflow: hidden; }
+.msgs { flex: 1; padding: 22px; display: flex; flex-direction: column; gap: 16px; overflow: auto; max-height: 64vh; }
+.msg { max-width: 88%; line-height: 1.6; }
+.msg.user { align-self: flex-end; background: var(--ink); color: var(--bg); padding: 9px 14px; border-radius: 16px 16px 4px 16px; }
+.msg.bot { align-self: flex-start; min-width: 0; }
+.msg.bot p { margin: 0 0 8px; }
+.msg.bot ul { margin: 0 0 8px; padding-left: 20px; }
+.msg.bot li { margin-bottom: 3px; }
+.idlink { font: 500 11.5px var(--f-mono); background: var(--accent-wash); color: var(--accent); border: 0; border-radius: 5px; padding: 1px 5px; cursor: pointer; }
+.idlink:hover { background: var(--accent); color: var(--accent-ink); }
+.trace { font: 500 11.5px var(--f-mono); color: var(--muted); }
+.composer { display: flex; gap: 10px; padding: 14px; border-top: 1px solid var(--line); background: var(--sunk); align-items: end; }
+.composer textarea { flex: 1; resize: none; min-width: 0; }
+.suggest { display: grid; gap: 8px; }
+.suggest button { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 11px 14px; cursor: pointer; font-size: 13px; color: var(--ink-2); box-shadow: var(--shadow-sm); transition: border-color .15s, color .15s; }
+.suggest button:hover { border-color: var(--accent); color: var(--ink); }
+.unavailable { padding: 18px; color: var(--muted); }
+
+/* command palette */
+.palette { position: fixed; z-index: 40; left: 50%; top: max(12vh, calc(env(safe-area-inset-top, 0px) + 20px)); transform: translateX(-50%); width: min(640px, calc(100% - 32px)); background: var(--surface); border: 1px solid var(--line-2); border-radius: 16px; box-shadow: var(--shadow-lg); overflow: hidden; }
+.palette input { width: 100%; border: 0; border-bottom: 1px solid var(--line); padding: 16px 18px; font-size: 16px; background: transparent; outline: none; }
+.palette ul { list-style: none; margin: 0; padding: 6px; max-height: 52vh; overflow: auto; }
+.palette li { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 9px; cursor: pointer; }
+.palette li[aria-selected="true"] { background: var(--accent-wash); }
+.palette li .t { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.palette li .k { margin-left: auto; font: 500 10.5px var(--f-mono); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; flex: none; }
+.palette .hint { padding: 9px 14px; border-top: 1px solid var(--line); font: 500 11px var(--f-mono); color: var(--muted); display: flex; gap: 14px; }
+
+footer.site { color: var(--muted); font-size: 12px; padding-block: 24px; border-top: 1px solid var(--line); }
+
+
+/* ===== cBioPortal-style layer ===== */
+body { font-size: 14px; }
+.appbar { background: #ffffff; border-bottom: 1px solid var(--line); backdrop-filter: none; -webkit-backdrop-filter: none; box-shadow: 0 1px 2px rgba(34,43,53,.04); }
+.appbar .wrap { height: 56px; }
+.brand { color: var(--navy); font: 700 18px var(--f-display); letter-spacing: -.01em; }
+.brand small { display: block; font: 400 11px var(--f-body); color: var(--muted); letter-spacing: 0; margin-top: 1px; }
+.mark i { background: var(--navy); }
+.mark i:nth-child(2) { background: var(--accent); }
+.mark i:nth-child(3) { opacity: .3; }
+.tabs { background: transparent; padding: 0; gap: 2px; align-self: stretch; }
+.tabs button { color: var(--ink-2); border-radius: 0; padding: 0 12px; height: 56px; font: 400 14px var(--f-body); box-shadow: inset 0 -3px 0 transparent; align-items: center; }
+.tabs button:hover { color: var(--accent); background: transparent; }
+.tabs button[aria-selected="true"] { background: transparent; color: var(--accent); font-weight: 700; box-shadow: inset 0 -3px 0 var(--accent); }
+.tabs .ct { color: var(--muted); font-weight: 400; }
+.kbtn { background: var(--surface); border: 1px solid var(--line-2); color: var(--muted); border-radius: 4px; box-shadow: none; }
+.kbtn:hover { border-color: var(--accent); color: var(--ink); }
+.kbtn kbd { background: var(--sunk); border-color: var(--line); color: var(--muted); }
+
+.hero { background: var(--hero-bg); color: var(--hero-ink); border-bottom: 1px solid var(--line); }
+.hero::before { display: none; }
+.hero .wrap { padding-block: 28px 28px; gap: 36px; }
+.hero h1 { font: 700 clamp(24px, 2.6vw, 32px)/1.2 var(--f-display); letter-spacing: -.01em; color: var(--ink); max-width: 26ch; margin-top: 12px; }
+.hero h1 > span { color: var(--muted); font-weight: 400; }
+.pill { background: var(--accent-wash); border: 0; color: var(--brand); font-size: 12px; }
+.pill i { background: var(--accent); box-shadow: none; }
+.lede { color: var(--ink-2); font-size: 14px; }
+.figs { border-top: 0; gap: 10px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.fig, .fig + .fig { padding: 12px 14px; border: 1px solid var(--line); border-left: 1px solid var(--line); border-radius: var(--r); background: var(--sunk); }
+.fig b { color: var(--accent); font: 700 26px/1.1 var(--f-display); letter-spacing: -.01em; }
+.fig span { color: var(--ink-2); font-size: 12.5px; }
+.fig small { color: var(--muted); font-family: var(--f-body); }
+.progress { color: var(--ink-2); }
+.progress .track { background: var(--line); }
+.progress .track i { background: var(--accent); }
+.slide { border: 1px solid var(--line); box-shadow: none; border-radius: var(--r); color: var(--ink); padding: 14px 16px 12px; }
+.slide h2 { font: 700 12px var(--f-display); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+
+.eyebrow { font: 700 11px var(--f-display); letter-spacing: .07em; color: var(--muted); }
+.section-head h2 { font: 700 24px/1.2 var(--f-display); letter-spacing: -.01em; color: var(--ink); }
+.opp h3 { font: 700 17px/1.25 var(--f-display); letter-spacing: 0; }
+.drawer h2 { font: 700 21px/1.25 var(--f-display); letter-spacing: 0; }
+.kind { color: var(--brand); background: var(--accent-wash); font-family: var(--f-display); font-weight: 700; border-radius: 3px; }
+.chip { border-radius: 3px; }
+.chip.mod { background: var(--accent-wash); color: var(--brand); }
+.chip.ct { color: var(--ink-2); }
+.acc-upon_request { background: var(--hot-wash); color: #b35f00; }
+.btn { background: var(--accent); color: #ffffff; font-weight: 700; border-radius: 4px; padding: 7px 16px; }
+.btn:hover { background: var(--mint-hover); filter: none; }
+.btn.ghost { background: var(--surface); color: var(--ink); border: 1px solid var(--line-2); }
+.msg.user { background: var(--accent); color: #ffffff; border-radius: 10px 10px 2px 10px; }
+blockquote.ev { border-left-color: var(--accent); }
+.card, .lab, .opp, .chat, .tablewrap, .chart { border-radius: var(--r); box-shadow: none; }
+.card:hover, .lab:hover { border-color: var(--accent); box-shadow: var(--shadow); transform: none; }
+th { font: 700 11.5px var(--f-display); letter-spacing: .03em; text-transform: none; background: #f7f8fa; color: var(--ink-2); }
+tbody tr:nth-child(even) td { background: #fafbfc; }
+tr.click:hover td { background: var(--accent-wash); }
+.opt input:checked { background: var(--accent); border-color: var(--accent); }
+.switch input:checked { background: var(--accent); }
+.field { border-radius: 4px; }
+.av.t0 { background: var(--accent-wash); color: var(--brand); }
+.av.t2 { background: var(--accent); color: #ffffff; }
+.av.t5 { background: var(--teal-wash); color: var(--teal); }
+.drawer { border-radius: 8px; }
+.palette { border-radius: 8px; }
+a { color: var(--accent); }
+
+th.mcol { width: 28px; padding: 6px 2px; vertical-align: bottom; text-align: center; height: 104px; }
+th.mcol span { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; font: 600 11px var(--f-body); letter-spacing: 0; text-transform: none; }
+td.mcell { width: 28px; padding: 9px 2px; text-align: center; vertical-align: middle; }
+td.mcell .dot { display: inline-block; }
+td.num, th.num { text-align: right; width: 36px; }
+/* living updates */
+.updated { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12.5px; color: var(--ink-2); flex-wrap: wrap; }
+.updated .live { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px var(--ok-wash); }
+.chip.new { background: var(--ok-wash); color: var(--ok); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; font-size: 10.5px; }
+.wn-paper { padding: 10px 0; border-bottom: 1px solid var(--line); display: grid; gap: 4px; }
+.wn-paper:last-child { border-bottom: 0; }
+.wn-paper .t { font-weight: 600; }
+
+/* about */
+.about { display: grid; gap: 14px; }
+.orgmap { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; }
+.org { border-radius: 8px; padding: 12px 14px; }
+.org-h { font: 700 14px var(--f-display); color: var(--ink); }
+.org-s { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+.org.ci { background: var(--sunk); border: 1px solid var(--line-2); }
+.org.kf { margin-top: 12px; background: var(--accent-wash); border: 1px solid var(--s2); }
+.org.pa { margin-top: 12px; margin-left: auto; width: min(100%, 340px); background: var(--surface); border: 1.5px dashed var(--accent); }
+.orgcards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 14px; }
+.orgcard { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; }
+.orgcard h3 { font: 700 16px var(--f-display); margin: 4px 0 6px; }
+.orgcard p { margin: 0; color: var(--ink-2); font-size: 13.5px; line-height: 1.6; max-width: 75ch; }
+
+/* study-view summary charts (cBioPortal-style, cross-filtering) */
+.summary-head { display: flex; justify-content: space-between; align-items: center; margin: 4px 0 10px; }
+.summary-head h3 { font: 600 13px var(--f-display); text-transform: uppercase; letter-spacing: .08em; color: var(--ink-2); }
+.linkbtn { background: none; border: 0; color: var(--accent); cursor: pointer; font-size: 12.5px; padding: 2px 0; }
+.summary { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 10px; margin-bottom: 18px; }
+.chart { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px 10px; display: grid; gap: 6px; align-content: start; box-shadow: var(--shadow-sm); min-width: 0; }
+.chart h4 { margin: 0 0 4px; display: flex; justify-content: space-between; font: 600 12px var(--f-display); letter-spacing: .05em; text-transform: uppercase; color: var(--ink-2); }
+.chart h4 span { font: 400 11px var(--f-mono); color: var(--muted); text-transform: none; letter-spacing: 0; }
+.brow { display: grid; grid-template-columns: minmax(0, 1fr) 92px 34px; gap: 8px; align-items: center; background: none; border: 0; padding: 2px 4px; margin: 0 -4px; border-radius: 6px; cursor: pointer; text-align: left; font-size: 12.5px; color: var(--ink-2); }
+.brow:hover { background: var(--sunk); color: var(--ink); }
+.brow .lb { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.brow .tr { height: 8px; border-radius: 4px; background: var(--sunk); overflow: hidden; }
+.brow .tr i { display: block; height: 100%; border-radius: 4px; background: var(--bar); }
+.brow .ct2 { font: 500 11.5px var(--f-mono); color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+.brow.on { color: var(--ink); font-weight: 500; }
+.brow.on .tr i { background: var(--bar-on); }
+.years { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; align-items: end; height: 92px; padding-top: 4px; }
+.ycol { display: grid; grid-template-rows: 1fr auto auto; gap: 3px; height: 100%; background: none; border: 0; padding: 0; cursor: pointer; }
+.ycol i { align-self: end; display: block; border-radius: 4px 4px 0 0; background: var(--bar); min-height: 2px; }
+.ycol.on i { background: var(--bar-on); }
+.ycol span { font: 500 10.5px var(--f-mono); color: var(--muted); text-align: center; }
+.ycol b { font: 500 10.5px var(--f-mono); color: var(--ink-2); text-align: center; }
+.viewtoggle { display: inline-flex; border: 1px solid var(--line-2); border-radius: 8px; overflow: hidden; }
+.viewtoggle button { border: 0; background: var(--surface); padding: 5px 12px; cursor: pointer; font-size: 12.5px; color: var(--ink-2); }
+.viewtoggle button[aria-pressed="true"] { background: var(--brand); color: #ffffff; }
+.dtable td { font-size: 12.5px; }
+.dtable td.lbl { font-weight: 500; color: var(--ink); max-width: 360px; }
+.dtable td .mono { white-space: nowrap; }
+footer.site .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+@media (max-width: 980px) {
+  .hero .wrap { grid-template-columns: minmax(0, 1fr); gap: 28px; padding-block: 32px 28px; }
+  .kbtn { min-width: 0; }
+  .kbtn span { display: none; }
+}
+@media (max-width: 860px) {
+  .appbar .wrap { gap: 10px; }
+  .brand span { display: none; }
+  .explore, .ask { grid-template-columns: minmax(0, 1fr); }
+  .rail { position: static; max-height: none; display: none; }
+  .rail.open { display: flex; }
+  .filters-btn { display: inline-flex; }
+  dl.kv { grid-template-columns: 96px minmax(0, 1fr); }
+  .figs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .fig b { font-size: 24px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .drawer:not([hidden]) { animation: slide .22s cubic-bezier(.2,.8,.2,1); }
+  .palette:not([hidden]) { animation: pop .16s ease-out; }
+  .tma .core { animation: stain .6s ease-out both; animation-delay: calc(var(--i, 0) * 12ms); }
+  @keyframes slide { from { transform: translateX(28px); opacity: .5; } to { transform: none; opacity: 1; } }
+  @keyframes pop { from { transform: translate(-50%, -6px) scale(.98); opacity: 0; } to { transform: translateX(-50%); opacity: 1; } }
+  @keyframes stain { from { opacity: .3; transform: scale(.85); } to { opacity: 1; transform: none; } }
+}
+</style>
+
+<header class="appbar">
+  <div class="wrap">
+    <a class="brand" href="#explore"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>Cancer Data Collaboratory<small>Krantz Center labs at Mass General Brigham</small></span></a>
+    <nav class="tabs" role="tablist" id="tabs" aria-label="Views"></nav>
+    <button class="kbtn" id="kbtn" type="button" aria-label="Search everything"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5.2" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>Search datasets, labs, tools</span><kbd>⌘K</kbd></button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <span class="pill"><i aria-hidden="true"></i>Mass General Brigham Cancer Institute · Krantz Family Center for Cancer Research · MGB Pathology</span>
+      <h1>The data behind our research. <span>Every dataset, model and tool from <span data-k="pis">62</span>&nbsp;labs, verified and searchable.</span></h1>
+      <p class="lede" id="lede">Datasets, models and tools from the <span data-k="pis">62</span> laboratories of the Krantz Family Center for Cancer Research, part of the Mass General Brigham Cancer Institute, including <span data-k="path">15</span> labs that are also in MGB Pathology. Built from every paper since 2021, with each accession checked against its repository.</p>
+      <div class="figs" id="figs" aria-label="Catalog totals"></div>
+      <div class="progress" id="progress" hidden><div class="track"><i id="progress-bar"></i></div><span id="progress-text"></span></div>
+      <div class="updated" id="updated" hidden><span class="live" aria-hidden="true"></span><span id="updated-text"></span> <button class="linkbtn" id="whatsnew" type="button">What's new</button></div>
+    </div>
+    <div class="slide" aria-labelledby="tma-title">
+      <header>
+        <h2 id="tma-title">Coverage map</h2>
+        <div class="legend" aria-hidden="true">fewer<i style="background:var(--s1)"></i><i style="background:var(--s3)"></i><i style="background:var(--s5)"></i>more<i style="background:var(--hot);border-radius:50%;width:7px;height:7px;margin-left:8px;"></i>2+ labs</div>
+      </header>
+      <div class="tma" id="tma"></div>
+      <footer><span>Cancer type × data modality, shaded by number of datasets.</span><span>Click a cell to explore.</span></footer>
+    </div>
+  </div>
+</section>
+
+<main class="wrap">
+  <section class="view" id="v-explore">
+    <div class="explore">
+      <aside class="rail" id="rail" aria-label="Filters">
+        <input class="field" id="q" type="search" placeholder="Filter by keyword or accession" aria-label="Filter datasets">
+        <div class="switches">
+          <label class="switch">Generated in study <input type="checkbox" id="t-gen" checked></label>
+          <label class="switch">Verified accession <input type="checkbox" id="t-ver"></label>
+          <label class="switch">Curated by agent <input type="checkbox" id="t-agent"></label>
+          <label class="switch" id="sw-new" hidden>New this week <input type="checkbox" id="t-new"></label>
+        </div>
+        <div id="facets" style="display:grid;gap:20px"></div>
+      </aside>
+      <div style="min-width:0">
+        <div class="summary-head"><h3>Summary of selected datasets</h3><button class="linkbtn" id="sum-toggle" type="button">Hide charts</button></div>
+        <div class="summary" id="summary"></div>
+        <div class="resultbar">
+          <div class="count"><b id="nres">0</b> datasets</div>
+          <div class="chips" id="active"></div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="chip filters-btn" id="filters-btn" type="button">Filters</button>
+            <div class="viewtoggle" role="group" aria-label="Result layout"><button type="button" id="vt-cards" aria-pressed="true">Cards</button><button type="button" id="vt-table" aria-pressed="false">Table</button></div>
+          </div>
+        </div>
+        <div class="list" id="results"></div>
+        <button class="showmore" id="more" type="button" hidden>Show more</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="v-cohorts" hidden>
+    <div class="section-head">
+      <div><div class="eyebrow">Same patients, several assays</div><h2>Multi-modal cohorts</h2><p>Sets of patients or samples profiled with two or more modalities in the same study. These are the strongest starting points for integrative analysis.</p></div>
+      <div class="controls"><input class="field" id="co-q" type="search" placeholder="Cancer type or lab" aria-label="Filter cohorts"></div>
+    </div>
+    <div class="tablewrap"><table id="co-table"></table></div>
+  </section>
+
+  <section class="view" id="v-opps" hidden>
+    <div class="section-head">
+      <div><div class="eyebrow">Who should be talking</div><h2>Integration opportunities</h2><p>Cancer types where several labs hold complementary data. Pairs who have never co-authored a paper are listed first.</p></div>
+      <div class="controls"><input class="field" id="op-q" type="search" placeholder="Cancer type" aria-label="Filter opportunities"></div>
+    </div>
+    <div class="opps" id="opps"></div>
+  </section>
+
+  <section class="view" id="v-labs" hidden>
+    <div class="section-head">
+      <div><div class="eyebrow"><span data-k="pis">62</span> principal investigators</div><h2>Labs</h2><p>The bar under each lab shows how its datasets are shared: open, controlled, on request, or not stated.</p></div>
+      <div class="controls">
+        <select class="field" id="lab-group" aria-label="Group"><option value="">All groups</option><option value="kfccr">KFCCR (all labs)</option><option value="pathology">Also in MGB Pathology</option></select>
+        <select class="field" id="lab-sort" aria-label="Sort"><option value="datasets">Most datasets</option><option value="name">Name</option><option value="papers">Most papers</option></select>
+      </div>
+    </div>
+    <div class="labs" id="labs"></div>
+  </section>
+
+  <section class="view" id="v-resources" hidden>
+    <div class="section-head">
+      <div><div class="eyebrow">Made here, reusable anywhere</div><h2>Resources</h2><p>Cell lines, models, compounds, constructs and software the labs created.</p></div>
+      <div class="controls">
+        <select class="field" id="rs-type" aria-label="Resource type"><option value="">All types</option></select>
+        <input class="field" id="rs-q" type="search" placeholder="Name, target, identifier" aria-label="Search resources">
+      </div>
+    </div>
+    <div class="tablewrap"><table id="rs-table"></table></div>
+  </section>
+
+  <section class="view" id="v-ask" hidden>
+    <div class="section-head">
+      <div><div class="eyebrow">Ask the catalog</div><h2>Ask</h2><p>Claude looks things up in the catalog and links every answer to the records it used.</p></div>
+    </div>
+    <div class="ask">
+      <div class="chat">
+        <div class="msgs" id="msgs" aria-live="polite"></div>
+        <form class="composer" id="composer">
+          <textarea class="field" id="ask-input" rows="2" placeholder="Which labs have single-cell data on ICI-treated melanoma?" aria-label="Question"></textarea>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <button class="btn" id="ask-send" type="submit">Ask</button>
+            <button class="btn ghost" id="ask-stop" type="button" hidden>Stop</button>
+          </div>
+        </form>
+      </div>
+      <div class="suggest" id="suggest"><div class="eyebrow" style="margin-bottom:4px">Try asking</div></div>
+    </div>
+  </section>
+  <section class="view" id="v-about" hidden>
+    <div class="section-head">
+      <div><div class="eyebrow">Context</div><h2>Where these labs sit</h2><p>The catalog covers the research laboratories of the Krantz Family Center for Cancer Research. The center is part of the Mass General Brigham Cancer Institute, and 15 of its labs also hold appointments in MGB Pathology.</p></div>
+    </div>
+    <div class="about">
+      <div class="orgmap" role="img" aria-label="KFCCR sits inside the MGB Cancer Institute; some of its labs are also in MGB Pathology">
+        <div class="org ci"><div class="org-h">Mass General Brigham Cancer Institute</div><div class="org-s">Cancer care and research across Mass General Brigham · 12 cancer services</div>
+          <div class="org kf"><div class="org-h">Krantz Family Center for Cancer Research</div><div class="org-s"><span data-k="sites">62 labs · Charlestown 48 · Simches 11 · Jackson 3</span></div>
+            <div class="org pa"><div class="org-h">MGB Pathology</div><div class="org-s">15 KFCCR labs with Pathology appointments</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="orgcards">
+        <div class="orgcard"><div class="eyebrow">Institute</div><h3>Mass General Brigham Cancer Institute</h3><p>Brings together cancer care and research across Mass General Brigham. Clinical care is organized into 12 services: breast, blood cancers, gastrointestinal, genitourinary, gynecologic, lung, head and neck, cutaneous, sarcoma, orthopedic oncology, pediatric hematology/oncology, and tumors of the nervous system. President: David P. Ryan.</p></div>
+        <div class="orgcard"><div class="eyebrow">Research center</div><h3>Krantz Family Center for Cancer Research</h3><p>Established with the Krantz family gift in 2023. Its <span data-k="pis">62</span> principal investigators hold Harvard Medical School appointments in <span data-k="depts">Medicine (34), Pathology (15), Radiation Oncology (4), Surgery (3), Dermatology (2) and Pediatrics (1)</span>. Funds collaborative projects through the Krantz Awards (Quantum, Breakthrough, Spark, Technology). Director: Daniel A. Haber · Scientific Director: Raul Mostoslavsky.</p></div>
+        <div class="orgcard"><div class="eyebrow">Department</div><h3>MGB Pathology</h3><p><span data-k="path">15</span> KFCCR labs, many in the Molecular Pathology Unit, sit in Pathology: genomics, single-cell and spatial methods, computational biology and molecular diagnostics. Pathology research labs outside KFCCR are not yet in the catalog.</p></div>
+      </div>
+      <div class="orgcard wide"><div class="eyebrow">Method</div><h3>How this catalog is built</h3><p>Every 2021–2026 paper led or co-authored by the <span data-k="pis">62</span> KFCCR principal investigators (<span data-k="papers">2,253</span> unique papers, excluding mega-consortium papers where the PI is not among the listed authors, and papers by other researchers with the same name) was harvested from OpenAlex, read in full where open access allows (about half) or from the abstract, and parsed by Claude into datasets, cohorts and reusable resources, each with a quote from the paper as evidence. Repository accessions were checked against GEO, ENA/SRA, dbGaP, EGA, PRIDE, Zenodo and GitHub. Cancer types are grouped with OncoTree. Lab heads can correct any record from its detail panel.</p></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site"><div class="wrap"><span id="foot"></span><span>Prototype by the Vazquez-Garcia Lab · not an official Mass General Brigham website</span></div></footer>
+
+<div class="tip" id="tip" hidden></div>
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-label="Record detail">
+  <header><div style="display:flex;gap:10px;align-items:center"><span class="kind" id="d-kind"></span><span class="mono muted" id="d-id"></span></div><button class="x" id="d-close" type="button">Close</button></header>
+  <div class="body" id="d-body"></div>
+</aside>
+<div class="scrim" id="p-scrim" hidden></div>
+<div class="palette" id="palette" hidden role="dialog" aria-label="Search everything">
+  <input id="p-input" type="search" placeholder="Search datasets, cohorts, labs, resources, accessions…" aria-label="Search everything" autocomplete="off">
+  <ul id="p-list" role="listbox"></ul>
+  <div class="hint"><span>↑↓ move</span><span>↵ open</span><span>esc close</span></div>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const $ = (s) => document.querySelector(s);
+  const SVG = "http://www.w3.org/2000/svg";
+  const h = (tag, attrs, ...kids) => {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (v == null || v === false) continue;
+      if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+      else if (k === "class") el.className = v;
+      else el.setAttribute(k, v === true ? "" : v);
+    }
+    for (const kid of kids.flat()) if (kid != null && kid !== false) el.append(kid instanceof Node ? kid : String(kid));
+    return el;
+  };
+  const s = (tag, attrs) => { const el = document.createElementNS(SVG, tag); for (const [k, v] of Object.entries(attrs || {})) el.setAttribute(k, v); return el; };
+  const ACCESS = { open: "Open", controlled: "Controlled", upon_request: "On request", not_stated: "Not stated" };
+  const ACC_COLOR = { open: "var(--ok)", controlled: "var(--warn)", upon_request: "var(--hot)", not_stated: "var(--line-2)" };
+  const fmt = (n) => (n ?? 0).toLocaleString("en-US");
+
+  let D = null, PI = {}, DS = {}, RS = {}, CO = {};
+  const state = { q: "", gen: true, ver: false, agent: false, sel: {}, shown: 40, tab: "explore", view: "cards", charts: true, newOnly: false };
+  const FACETS = [
+    ["mod", "Modality", (d) => d.mod],
+    ["cg", "Cancer type", (d) => d.cg],
+    ["lab", "Lab (senior author)", (d) => d.sr.map((id) => PI[id]?.name).filter(Boolean)],
+    ["acc", "Access", (d) => [ACCESS[d.acc] || d.acc]],
+    ["org", "Organism", (d) => [d.org]],
+    ["tx", "Therapy", (d) => d.tx],
+    ["src", "Sample source", (d) => [d.src]],
+    ["yr", "Year", (d) => [String(D.papers[d.p]?.y || "")].filter(Boolean)],
+  ];
+
+  // ---------- avatars ----------
+  const initials = (name) => name.replace(/[^A-Za-z\- .]/g, "").split(/\s+/).filter((w) => w && !/^[A-Z]\.$/.test(w)).map((w) => w[0]).filter((c, i, a) => i === 0 || i === a.length - 1).join("").toUpperCase();
+  const tint = (id) => { let x = 0; for (const c of id) x = (x * 31 + c.charCodeAt(0)) >>> 0; return "t" + (x % 6); };
+  const avatar = (id, lg) => {
+    const p = PI[id];
+    if (!p) return null;
+    const el = h("span", { class: `av ${tint(id)}${lg ? " lg" : ""}`, title: p.name, "aria-hidden": "true" }, initials(p.name));
+    if (p.photo) {
+      const img = h("img", { src: p.photo, alt: "", loading: "lazy", decoding: "async" });
+      img.addEventListener("error", () => img.remove());  // fall back to initials
+      el.append(img);
+    }
+    return el;
+  };
+
+  // ---------- load ----------
+  fetch("data/catalog.json").then((r) => r.json()).then((data) => {
+    D = data;
+    data.pis.forEach((p) => (PI[p.id] = p));
+    data.datasets.forEach((d) => { d.cg = d.cg || []; DS[d.id] = d; });
+    data.resources.forEach((r) => (RS[r.id] = r));
+    data.cohorts.forEach((c) => (CO[c.id] = c));
+    renderHero();
+    renderTabs();
+    renderExplore();
+    renderCohorts();
+    renderOpps();
+    renderLabs();
+    renderResources();
+    initAsk();
+    initPalette();
+    initCorrections();
+    routeFromHash();
+  }).catch(() => {
+    $("#results").replaceChildren(h("div", { class: "empty" }, "The catalog data could not be loaded. Reload the page to try again."));
+  });
+
+  // ---------- hero ----------
+  function renderHero() {
+    const st = D.stats;
+    const figs = [
+      [st.datasets, "datasets", `${fmt(st.datasets_verified)} verified accessions`],
+      [st.multimodal_cohorts, "multi-modal cohorts", `${fmt(D.opportunities.length)} cross-lab opportunities`],
+      [st.resources, "tools, models & reagents", `from ${fmt(st.pis)} labs · ${fmt(st.papers)} papers`],
+    ];
+    $("#figs").replaceChildren(...figs.map(([n, l, sm]) => h("div", { class: "fig" }, h("b", {}, fmt(n)), h("span", {}, l), h("small", {}, sm))));
+    const research = st.papers - (st.papers_reviews || 0);
+    if (st.papers_extracted >= research) {
+      $("#progress").hidden = false;
+      $("#progress-bar").style.width = "100%";
+      $("#progress-text").textContent = `${Math.round((100 * st.papers_extracted) / st.papers)}% of papers read in depth: all ${fmt(research)} research papers (the other ${fmt(st.papers_reviews || 0)} are reviews).`;
+    } else if (st.papers_extracted < st.papers) {
+      const pct = Math.round((100 * st.papers_extracted) / st.papers);
+      $("#progress").hidden = false;
+      $("#progress-bar").style.width = Math.max(pct, 2) + "%";
+      $("#progress-text").textContent = `${pct}% of papers read in depth; the rest show datasets found in data-availability statements.`;
+    }
+    const nu = st.new_since_last || {};
+    if (st.last_update && nu.papers > 0) {
+      $("#updated").hidden = false;
+      $("#sw-new").hidden = false;
+      $("#updated-text").textContent = `Updated ${new Date(st.last_update + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })} · +${fmt(nu.papers)} papers, +${fmt(nu.datasets)} datasets, +${fmt(nu.resources)} resources this week.`;
+      $("#whatsnew").addEventListener("click", openWhatsNew);
+    }
+    $("#foot").textContent = `Built ${D.generated} from OpenAlex, Europe PMC and PubMed full text, with Claude extraction and repository verification. Corrections welcome from any record.`;
+    renderTMA();
+    // roster-derived counts in the intro, Labs header and About page
+    const cnt = (f) => D.pis.filter(f).length;
+    const tally = (key) => { const m = new Map(); for (const p of D.pis) m.set(p[key], (m.get(p[key]) || 0) + 1); return [...m].sort((a, b) => b[1] - a[1]); };
+    const depts = tally("dept").map(([k, v]) => `${k} (${v})`);
+    const fill = { pis: fmt(D.pis.length), path: fmt(cnt((p) => p.groups.includes("pathology"))), papers: fmt(st.papers),
+      depts: depts.length > 1 ? depts.slice(0, -1).join(", ") + " and " + depts.at(-1) : depts.join(""),
+      sites: `${fmt(D.pis.length)} labs · ` + tally("site").map(([k, v]) => `${k} ${v}`).join(" · ") };
+    document.querySelectorAll("[data-k]").forEach((el) => { if (fill[el.dataset.k] != null) el.textContent = fill[el.dataset.k]; });
+  }
+
+  const SHORT_MOD = { "clinical / outcome data": "clinical", "targeted panel sequencing": "panel seq", "cfDNA / liquid biopsy": "cfDNA", "spatial transcriptomics": "spatial tx", "spatial proteomics / multiplex imaging": "multiplex img", "H&E / histopathology imaging": "H&E", "ChIP-seq / CUT&RUN / CUT&Tag": "ChIP/CUT&RUN", "flow / mass cytometry": "cytometry", "single-cell multiome": "multiome", "drug sensitivity screen": "drug screen" };
+  const shortMod = (m) => SHORT_MOD[m] || m;
+
+  function renderTMA() {
+    const pool = D.datasets.filter((d) => d.gen && d.cg.length);
+    const cgCount = new Map(), modCount = new Map(), cell = new Map(), cellLabs = new Map();
+    const skipCg = new Set(["Pan-cancer", "Non-cancer", "Hematologic (unspecified)", "Leukemia (unspecified)", "Lymphoma (unspecified)"]);
+    for (const d of pool) for (const g of d.cg) {
+      if (skipCg.has(g)) continue;
+      cgCount.set(g, (cgCount.get(g) || 0) + 1);
+      for (const m of d.mod) {
+        if (m === "other") continue;
+        modCount.set(m, (modCount.get(m) || 0) + 1);
+        const k = g + "|" + m;
+        cell.set(k, (cell.get(k) || 0) + 1);
+        const set = cellLabs.get(k) || new Set(); d.sr.forEach((x) => set.add(x)); cellLabs.set(k, set);
+      }
+    }
+    const rows = [...cgCount].sort((a, b) => b[1] - a[1]).slice(0, 10).map((x) => x[0]);
+    const cols = [...modCount].sort((a, b) => b[1] - a[1]).slice(0, 9).map((x) => x[0]);
+    if (!rows.length) { $("#tma").replaceChildren(h("div", { class: "empty" }, "The coverage map fills in as papers are read.")); return; }
+    const short = shortMod;
+    const labelW = 170, step = 32, top = 62, R = 13;
+    const W = labelW + cols.length * step + 8, H = top + rows.length * step;
+    const max = Math.max(...cell.values());
+    const svg = s("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": `Coverage map: ${rows.length} cancer types by ${cols.length} modalities` });
+    cols.forEach((m, j) => {
+      const x = labelW + j * step + step / 2;
+      const t = s("text", { x, y: top - 10, class: "col", transform: `rotate(-38 ${x} ${top - 10})` });
+      t.textContent = short(m);
+      svg.append(t);
+    });
+    let i = 0;
+    rows.forEach((g, r) => {
+      const y = top + r * step + step / 2;
+      const t = s("text", { x: labelW - 12, y: y + 4, "text-anchor": "end" });
+      t.textContent = g.length > 26 ? g.slice(0, 25) + "…" : g;
+      svg.append(t);
+      cols.forEach((m, j) => {
+        const n = cell.get(g + "|" + m) || 0;
+        const x = labelW + j * step + step / 2;
+        const step6 = n ? Math.min(6, 1 + Math.floor(5 * Math.sqrt((n - 1) / Math.max(1, max - 1)))) : 0;
+        const core = s("rect", { x: x - R, y: y - R, width: 2 * R, height: 2 * R, rx: 5, class: "core" + (n ? "" : " empty"), tabindex: n ? "0" : "-1", style: `--i:${i++}`,
+          fill: n ? `var(--s${step6})` : "var(--core-empty)" });
+        const labs = cellLabs.get(g + "|" + m)?.size || 0;
+        if (n) {
+          const show = (e) => tip(e, `${g} × ${m}`, `${n} dataset${n > 1 ? "s" : ""} · ${labs} lab${labs !== 1 ? "s" : ""}`);
+          core.addEventListener("mousemove", show);
+          core.addEventListener("focus", (e) => { const b = e.target.getBoundingClientRect(); tip({ clientX: b.right, clientY: b.top }, `${g} × ${m}`, `${n} datasets · ${labs} labs`); });
+          core.addEventListener("mouseleave", hideTip);
+          core.addEventListener("blur", hideTip);
+          const go = () => { hideTip(); state.sel = { cg: new Set([g]), mod: new Set([m]) }; state.shown = 40; showTab("explore", true); renderExplore(); $("#v-explore").scrollIntoView({ behavior: "smooth", block: "start" }); };
+          core.addEventListener("click", go);
+          core.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+        }
+        svg.append(core);
+        // coral corner dot: a cross-lab overlap (2+ labs hold data in this cell)
+        if (labs > 1) svg.append(s("circle", { cx: x + R - 3, cy: y - R + 3, r: 3, fill: "var(--hot)", stroke: "#ffffff", "stroke-width": 1.5, "pointer-events": "none" }));
+      });
+    });
+    $("#tma").replaceChildren(svg);
+  }
+  function tip(e, title, body) {
+    const t = $("#tip");
+    t.replaceChildren(h("b", {}, title), body);
+    t.hidden = false;
+    const x = Math.min(e.clientX + 14, window.innerWidth - t.offsetWidth - 8);
+    t.style.left = x + "px";
+    t.style.top = Math.max(8, e.clientY - t.offsetHeight - 12) + "px";
+  }
+  function hideTip() { $("#tip").hidden = true; }
+
+  // ---------- tabs + routing ----------
+  const TABS = [["explore", "Datasets", () => D.datasets.filter((d) => d.gen).length], ["cohorts", "Cohorts", () => D.cohorts.length],
+    ["opps", "Opportunities", () => D.opportunities.length], ["labs", "Labs", () => D.pis.length],
+    ["resources", "Resources", () => D.resources.filter((r) => r.gen).length], ["ask", "Ask", null], ["about", "About", null]];
+  function renderTabs() {
+    $("#tabs").replaceChildren(...TABS.map(([k, label, count]) =>
+      h("button", { role: "tab", id: "tab-" + k, "aria-selected": String(k === state.tab), type: "button", onclick: () => showTab(k, true) },
+        label, count ? h("span", { class: "ct" }, fmt(count())) : null)));
+  }
+  function showTab(k, push) {
+    state.tab = k;
+    for (const [t] of TABS) {
+      $("#v-" + t).hidden = t !== k;
+      $("#tab-" + t)?.setAttribute("aria-selected", String(t === k));
+    }
+    if (push) history.replaceState(null, "", "#" + k);
+  }
+  function routeFromHash() {
+    const tok = decodeURIComponent(location.hash.slice(1));
+    if (TABS.some(([k]) => k === tok)) return showTab(tok);
+    if (/^(DS|RS|CO|PI)-/.test(tok)) openRecord(tok, false);
+  }
+  window.addEventListener("hashchange", routeFromHash);
+  document.addEventListener("click", (e) => { if (e.target.id === "about-link") { e.preventDefault(); showTab("about", true); $("#v-about").scrollIntoView({ behavior: "smooth" }); } });
+
+  // ---------- explore ----------
+  const isNew = (pid) => D.stats.new_since_last?.papers > 0 && D.papers[pid]?.a === D.stats.last_update;
+  const datasetPool = () => D.datasets.filter((d) => (!state.gen || d.gen) && (!state.ver || d.ver) && (!state.agent || d.orig === "agent") && (!state.newOnly || isNew(d.p)));
+  function matches(d, skip) {
+    if (state.q) {
+      const hay = (d.label + " " + d.assay + " " + d.ev + " " + d.ct.join(" ") + " " + d.cg.join(" ") + " " + d.mod.join(" ") + " " +
+        d.ids.map((x) => x.id).join(" ") + " " + (D.papers[d.p]?.t || "")).toLowerCase();
+      if (!state.q.toLowerCase().split(/\s+/).every((t) => hay.includes(t))) return false;
+    }
+    for (const [key, , get] of FACETS) {
+      if (key === skip) continue;
+      const want = state.sel[key];
+      if (want && want.size && !get(d).some((v) => want.has(v))) return false;
+    }
+    return true;
+  }
+  const facetOpen = {};
+  function renderExplore() {
+    const pool = datasetPool();
+    // curated records first, then by year
+    const res = pool.filter((d) => matches(d)).sort((a, b) => (a.orig === "agent" ? 0 : 1) - (b.orig === "agent" ? 0 : 1) || (D.papers[b.p]?.y || 0) - (D.papers[a.p]?.y || 0));
+    $("#nres").textContent = fmt(res.length);
+    $("#facets").replaceChildren(...FACETS.map(([key, title, get]) => {
+      const counts = new Map();
+      for (const d of pool) if (matches(d, key)) for (const v of new Set(get(d))) counts.set(v, (counts.get(v) || 0) + 1);
+      const sel = state.sel[key] || new Set();
+      for (const v of sel) if (!counts.has(v)) counts.set(v, 0);
+      const items = [...counts].sort((a, b) => b[1] - a[1] || String(a[0]).localeCompare(String(b[0])));
+      if (!items.length) return null;
+      const lim = facetOpen[key] ? items.length : 7;
+      return h("div", { class: "facet" }, h("h4", { class: "eyebrow" }, title),
+        ...items.slice(0, lim).map(([v, n]) => h("label", { class: "opt" + (sel.has(v) ? " on" : "") },
+          h("input", { type: "checkbox", checked: sel.has(v), onchange: (e) => toggle(key, v, e.target.checked) }),
+          h("span", {}, v), h("span", { class: "n" }, fmt(n)))),
+        items.length > 7 ? h("button", { class: "more", type: "button", onclick: () => { facetOpen[key] = !facetOpen[key]; renderExplore(); } },
+          facetOpen[key] ? "Show fewer" : `Show all ${items.length}`) : null);
+    }));
+    const chips = [];
+    for (const [key] of FACETS) for (const v of state.sel[key] || []) chips.push(h("button", { class: "chip", type: "button", onclick: () => toggle(key, v, false), "aria-label": "Remove filter " + v }, v, " ✕"));
+    if (chips.length > 1) chips.push(h("button", { class: "more", type: "button", onclick: () => { state.sel = {}; renderExplore(); } }, "Clear all"));
+    $("#active").replaceChildren(...chips);
+    renderSummary(res);
+    const list = res.slice(0, state.shown);
+    if (!list.length) $("#results").replaceChildren(h("div", { class: "empty" }, "No datasets match these filters. Remove a filter or clear the search."));
+    else if (state.view === "table") $("#results").replaceChildren(datasetTable(list));
+    else $("#results").replaceChildren(...list.map(datasetCard));
+    $("#more").hidden = res.length <= state.shown;
+    $("#more").textContent = `Show ${fmt(Math.min(40, res.length - state.shown))} more`;
+  }
+  // cBioPortal-style study view: each chart summarises the current selection; clicking a bar filters on it
+  const SUMMARY = [["mod", "Modality"], ["cg", "Cancer type"], ["acc", "Access"], ["src", "Sample source"], ["org", "Organism"], ["yr", "Publication year"]];
+  function renderSummary(res) {
+    const box = $("#summary");
+    box.hidden = !state.charts;
+    if (!state.charts) return;
+    box.replaceChildren(...SUMMARY.map(([key, title]) => {
+      const get = FACETS.find((f) => f[0] === key)[2];
+      const counts = new Map();
+      for (const d of res) for (const v of new Set(get(d))) if (v && v !== "other") counts.set(v, (counts.get(v) || 0) + 1);
+      const sel = state.sel[key] || new Set();
+      if (key === "yr") {
+        const years = [...counts.keys()].sort();
+        const max = Math.max(1, ...counts.values());
+        return h("div", { class: "chart" }, h("h4", {}, title, h("span", {}, `${years.length} years`)),
+          h("div", { class: "years" }, ...years.map((y) => h("button", { class: "ycol" + (sel.has(y) ? " on" : ""), type: "button", title: `${y}: ${counts.get(y)} datasets`, onclick: () => toggle(key, y, !sel.has(y)) },
+            h("i", { style: `height:${Math.max(3, (100 * counts.get(y)) / max)}%` }), h("b", {}, fmt(counts.get(y))), h("span", {}, "’" + y.slice(2))))));
+      }
+      const items = [...counts].sort((a, b) => b[1] - a[1]).slice(0, 7);
+      const max = Math.max(1, ...items.map((x) => x[1]));
+      return h("div", { class: "chart" }, h("h4", {}, title, h("span", {}, `${fmt(counts.size)} values`)),
+        ...(items.length ? items.map(([v, n]) => h("button", { class: "brow" + (sel.has(v) ? " on" : ""), type: "button", title: `${v}: ${n} datasets`, onclick: () => toggle(key, v, !sel.has(v)) },
+          h("span", { class: "lb" }, v), h("span", { class: "tr" }, h("i", { style: `width:${(100 * n) / max}%${key === "acc" ? ";background:" + ACC_COLOR[Object.keys(ACCESS).find((k) => ACCESS[k] === v)] : ""}` })), h("span", { class: "ct2" }, fmt(n))))
+          : [h("div", { class: "muted", style: "font-size:12.5px" }, "No values in this selection")]));
+    }));
+  }
+  function datasetTable(list) {
+    const head = h("tr", {}, ...["Dataset", "Modality", "Cancer type", "Lab", "Access", "Accession", "Year"].map((t) => h("th", {}, t)));
+    const rows = list.map((d) => h("tr", { class: "click", onclick: () => openRecord(d.id, true) },
+      h("td", { class: "lbl" }, d.label, isNew(d.p) ? [" ", h("span", { class: "chip new" }, "New")] : null), h("td", {}, d.mod.join(", ")), h("td", {}, (d.cg.length ? d.cg : d.ct).join(", ")),
+      h("td", {}, d.sr.map((id) => PI[id]?.name.split(" ").pop()).join(", ")), h("td", {}, accChip(d.acc)),
+      h("td", {}, d.ids[0] ? h("span", { class: "mono" }, d.ids[0].id + (d.ids.length > 1 ? ` +${d.ids.length - 1}` : "")) : h("span", { class: "muted" }, "—")),
+      h("td", { class: "mono" }, D.papers[d.p]?.y || "")));
+    return h("div", { class: "tablewrap" }, h("table", { class: "dtable" }, h("thead", {}, head), h("tbody", {}, ...rows)));
+  }
+  function setView(v) {
+    state.view = v;
+    $("#vt-cards").setAttribute("aria-pressed", String(v === "cards"));
+    $("#vt-table").setAttribute("aria-pressed", String(v === "table"));
+    try { localStorage.setItem("kdc-view", v); } catch {}
+    renderExplore();
+  }
+  $("#vt-cards").addEventListener("click", () => setView("cards"));
+  $("#vt-table").addEventListener("click", () => setView("table"));
+  $("#sum-toggle").addEventListener("click", () => { state.charts = !state.charts; $("#sum-toggle").textContent = state.charts ? "Hide charts" : "Show charts"; renderExplore(); });
+  try { const v = localStorage.getItem("kdc-view"); if (v === "table") { state.view = "table"; $("#vt-cards").setAttribute("aria-pressed", "false"); $("#vt-table").setAttribute("aria-pressed", "true"); } } catch {}
+
+  function toggle(key, v, on) {
+    const set = (state.sel[key] ||= new Set());
+    on ? set.add(v) : set.delete(v);
+    state.shown = 40;
+    renderExplore();
+  }
+  const accChip = (a) => h("span", { class: "chip acc acc-" + a }, ACCESS[a] || a);
+  function datasetCard(d) {
+    const p = D.papers[d.p] || {};
+    return h("button", { class: "card", type: "button", onclick: () => openRecord(d.id, true) },
+      h("div", { class: "row1" }, h("span", { class: "title" }, d.label), h("span", { class: "id mono" }, d.id)),
+      h("div", { class: "chips" }, ...d.mod.map((m) => h("span", { class: "chip mod" }, m)), ...(d.ct.length ? d.ct : d.cg).slice(0, 2).map((c) => h("span", { class: "chip ct" }, c)),
+        accChip(d.acc), d.n ? h("span", { class: "chip" }, fmt(d.n) + " samples") : null,
+        ...d.ids.slice(0, 2).map((x) => h("span", { class: "chip acc-id" }, x.id)),
+        isNew(d.p) ? h("span", { class: "chip new" }, "New") : null,
+        d.orig === "regex" ? h("span", { class: "flag" }, "accession scan") : d.conf === "low" ? h("span", { class: "flag" }, "low confidence") : null),
+      h("div", { class: "foot" }, h("span", { class: "avs" }, ...d.sr.slice(0, 3).map((id) => avatar(id))),
+        h("span", { class: "paper" }, (d.sr.map((id) => PI[id]?.name.split(" ").pop()).join(", ") || "") + (p.t ? " · " + p.t : "") + (p.y ? ` · ${p.y}` : ""))));
+  }
+  let qTimer;
+  $("#q").addEventListener("input", (e) => { clearTimeout(qTimer); qTimer = setTimeout(() => { state.q = e.target.value.trim(); state.shown = 40; renderExplore(); }, 150); });
+  $("#t-gen").addEventListener("change", (e) => { state.gen = e.target.checked; renderExplore(); });
+  $("#t-ver").addEventListener("change", (e) => { state.ver = e.target.checked; renderExplore(); });
+  $("#t-agent").addEventListener("change", (e) => { state.agent = e.target.checked; renderExplore(); });
+  $("#t-new").addEventListener("change", (e) => { state.newOnly = e.target.checked; renderExplore(); });
+  $("#more").addEventListener("click", () => { state.shown += 40; renderExplore(); });
+  $("#filters-btn").addEventListener("click", () => $("#rail").classList.toggle("open"));
+
+  // ---------- cohorts ----------
+  function renderCohorts() {
+    const mods = [...new Set(D.cohorts.flatMap((c) => c.mod))].filter((m) => m !== "other");
+    const modCount = new Map(mods.map((m) => [m, D.cohorts.filter((c) => c.mod.includes(m)).length]));
+    mods.sort((a, b) => modCount.get(b) - modCount.get(a));
+    const top = mods.slice(0, 10);
+    const draw = () => {
+      const q = $("#co-q").value.trim().toLowerCase();
+      const rows = D.cohorts.filter((c) => !q || (c.ct.join(" ") + " " + c.labs.map((id) => PI[id]?.name).join(" ") + " " + c.label).toLowerCase().includes(q))
+        .sort((a, b) => b.mod.length - a.mod.length);
+      const head = h("tr", {}, h("th", {}, "Cohort"), h("th", {}, "Labs"), h("th", {}, "Cancer type"),
+        ...top.map((m) => h("th", { class: "mcol", title: m, scope: "col" }, h("span", {}, shortMod(m)))),
+        h("th", { class: "num", title: "Number of modalities in the cohort" }, "#"));
+      const body = rows.length ? rows.map((c) => {
+        const extra = c.mod.filter((m) => !top.includes(m) && m !== "other");
+        return h("tr", { class: "click", onclick: () => openRecord(c.id, true) },
+          h("td", {}, h("div", { style: "font-weight:600" }, c.label), extra.length ? h("div", { class: "muted", style: "font-size:12px" }, "also: " + extra.join(", ")) : null),
+          h("td", {}, h("span", { class: "avs" }, ...c.labs.slice(0, 4).map((id) => avatar(id)))),
+          h("td", {}, c.ct.join(", ") || h("span", { class: "muted" }, "—")),
+          ...top.map((m) => h("td", { class: "mcell", title: `${shortMod(m)}: ${c.mod.includes(m) ? "yes" : "no"}` }, h("span", { class: "dot" + (c.mod.includes(m) ? " on" : ""), "aria-label": c.mod.includes(m) ? m : "" }))),
+          h("td", { class: "num mono" }, c.mod.length));
+      }) : [h("tr", {}, h("td", { colspan: String(top.length + 4), class: "muted" }, D.cohorts.length ? "No cohorts match this filter." : "Cohorts appear once papers are read in depth."))];
+      $("#co-table").replaceChildren(h("thead", {}, head), h("tbody", {}, ...body));
+    };
+    $("#co-q").addEventListener("input", draw);
+    draw();
+  }
+
+  // ---------- opportunities ----------
+  const labLink = (id) => h("button", { class: "lablink", type: "button", onclick: () => openRecord(id, true) }, avatar(id), PI[id]?.name || id);
+  function renderOpps() {
+    const draw = () => {
+      const q = $("#op-q").value.trim().toLowerCase();
+      const rows = D.opportunities.filter((o) => !q || o.ct.toLowerCase().includes(q));
+      $("#opps").replaceChildren(...(rows.length ? rows.slice(0, 60).map((o) => h("div", { class: "opp" },
+        h("div", {}, h("h3", {}, o.ct), h("div", { class: "sub" }, h("span", {}, `${o.n} labs`), h("span", {}, `${o.mod.length} modalities`))),
+        h("div", { class: "chips" }, ...o.mod.slice(0, 10).map((m) => h("span", { class: "chip mod" }, m))),
+        ...o.pairs.slice(0, 3).map((p) => h("div", { class: "pair" },
+          h("div", { class: "who" }, labLink(p.a), h("span", { class: "plus" }, "+"), labLink(p.b), !p.co ? h("span", { class: "new" }, "New pairing") : null),
+          h("div", { class: "muted" }, "Brings together " + p.comp.join(", ")))))) :
+        [h("div", { class: "empty" }, D.opportunities.length ? "No cancer type matches this filter." : "Opportunities appear once datasets carry cancer types.")]));
+    };
+    $("#op-q").addEventListener("input", draw);
+    draw();
+  }
+
+  // ---------- labs ----------
+  function renderLabs() {
+    const draw = () => {
+      const g = $("#lab-group").value, so = $("#lab-sort").value;
+      const rows = D.pis.filter((p) => !g || p.groups.includes(g)).sort((a, b) =>
+        so === "name" ? a.name.localeCompare(b.name) : so === "papers" ? b.n_papers - a.n_papers : b.n_datasets - a.n_datasets);
+      $("#labs").replaceChildren(...rows.map((p) => {
+        const tot = Object.values(p.access).reduce((x, y) => x + y, 0) || 1;
+        return h("button", { class: "lab", type: "button", onclick: () => openRecord(p.id, true) },
+          h("div", { class: "top" }, avatar(p.id, true), h("div", { style: "min-width:0" }, h("div", { class: "nm" }, p.name), h("div", { class: "dept" }, `${p.dept} · ${p.groups.map((x) => ({ kfccr: "KFCCR", pathology: "MGB Pathology" })[x]).join(" · ")}`))),
+          h("div", { class: "nums" }, h("div", {}, h("b", {}, fmt(p.n_papers)), "papers"), h("div", {}, h("b", {}, fmt(p.n_datasets)), "datasets"), h("div", {}, h("b", {}, fmt(p.n_resources)), "resources")),
+          h("div", { class: "bar", "aria-label": Object.entries(p.access).map(([k, v]) => `${ACCESS[k]}: ${v}`).join(", ") || "No datasets" },
+            ...Object.keys(ACCESS).filter((k) => p.access[k]).map((k) => h("i", { style: `width:${(100 * p.access[k]) / tot}%;background:${ACC_COLOR[k]}`, title: `${ACCESS[k]}: ${p.access[k]}` }))),
+          h("div", { class: "mods" }, Object.keys(p.modalities).filter((m) => m !== "other").slice(0, 4).join(" · ") || "Not yet read in depth"));
+      }));
+    };
+    $("#lab-group").addEventListener("change", draw);
+    $("#lab-sort").addEventListener("change", draw);
+    draw();
+  }
+
+  // ---------- resources ----------
+  function renderResources() {
+    const types = [...new Set(D.resources.map((r) => r.type))].sort();
+    $("#rs-type").append(...types.map((t) => h("option", { value: t }, t)));
+    const draw = () => {
+      const t = $("#rs-type").value, q = $("#rs-q").value.trim().toLowerCase();
+      const rows = D.resources.filter((r) => r.gen && (!t || r.type === t) &&
+        (!q || (r.name + " " + (r.ident || "") + " " + r.tg.join(" ")).toLowerCase().includes(q)));
+      const head = h("tr", {}, h("th", {}, "Resource"), h("th", {}, "Type"), h("th", {}, "Targets"), h("th", {}, "Lab"), h("th", {}, "Availability"));
+      const body = rows.length ? rows.slice(0, 500).map((r) => h("tr", { class: "click", onclick: () => openRecord(r.id, true) },
+        h("td", {}, h("div", { style: "font-weight:600" }, r.name, isNew(r.p) ? [" ", h("span", { class: "chip new" }, "New")] : null), r.ident ? h("div", { class: "mono muted", style: "overflow-wrap:anywhere" }, r.ident) : null), h("td", {}, h("span", { class: "chip" }, r.type)), h("td", {}, r.tg.join(", ")),
+        h("td", {}, h("span", { class: "avs" }, ...r.labs.slice(0, 3).map((id) => avatar(id)))), h("td", {}, r.av.replace("_", " "))))
+        : [h("tr", {}, h("td", { colspan: "5", class: "muted" }, D.resources.length ? "No resources match these filters." : "Resources appear once papers are read in depth."))];
+      $("#rs-table").replaceChildren(h("thead", {}, head), h("tbody", {}, ...body));
+    };
+    $("#rs-type").addEventListener("change", draw);
+    $("#rs-q").addEventListener("input", draw);
+    draw();
+  }
+
+  // ---------- drawer ----------
+  let currentId = null;
+  const KIND = { DS: "Dataset", RS: "Resource", CO: "Cohort", PI: "Lab" };
+  function openRecord(id, push) {
+    closePalette();
+    const body = recordView(id);
+    if (!body) return;
+    currentId = id;
+    $("#d-id").textContent = id;
+    $("#d-kind").textContent = KIND[id.slice(0, 2)];
+    $("#d-body").replaceChildren(...body, correctionBlock(id));
+    $("#drawer").hidden = false;
+    $("#scrim").hidden = false;
+    $("#d-close").focus();
+    if (push) history.replaceState(null, "", "#" + id);
+    watchCorrections(id);
+  }
+  function openWhatsNew() {
+    const last = D.stats.last_update;
+    const papers = Object.entries(D.papers).filter(([, p]) => p.a === last);
+    const dsBy = new Map(), rsBy = new Map();
+    for (const d of D.datasets) if (d.gen && D.papers[d.p]?.a === last) (dsBy.get(d.p) || dsBy.set(d.p, []).get(d.p)).push(d);
+    for (const r of D.resources) if (r.gen && D.papers[r.p]?.a === last) (rsBy.get(r.p) || rsBy.set(r.p, []).get(r.p)).push(r);
+    currentId = null;
+    $("#d-kind").textContent = "Update";
+    $("#d-id").textContent = last;
+    $("#d-body").replaceChildren(h("h2", {}, "What's new this week"),
+      h("div", { class: "muted" }, `${papers.length} new papers from KFCCR labs, read in depth and added to the catalog.`),
+      h("div", {}, ...papers.map(([pid, p]) => h("div", { class: "wn-paper" },
+        h("div", { class: "t" }, p.doi ? h("a", { href: "https://doi.org/" + p.doi, target: "_blank", rel: "noopener" }, p.t) : p.t),
+        h("div", { class: "muted", style: "font-size:12.5px" }, `${p.j || ""} ${p.y || ""}`),
+        h("div", { class: "linklist" }, ...(dsBy.get(pid) || []).map((d) => h("button", { type: "button", onclick: () => openRecord(d.id, true) }, `${d.label} · ${d.mod.join(", ")}`)),
+          ...(rsBy.get(pid) || []).map((r) => h("button", { type: "button", onclick: () => openRecord(r.id, true) }, `${r.name} · ${r.type}`)))))));
+    $("#drawer").hidden = false;
+    $("#scrim").hidden = false;
+    $("#d-close").focus();
+  }
+  function closeDrawer() {
+    $("#drawer").hidden = true;
+    $("#scrim").hidden = true;
+    currentId = null;
+    unwatch?.();
+    history.replaceState(null, "", "#" + state.tab);
+  }
+  $("#d-close").addEventListener("click", closeDrawer);
+  $("#scrim").addEventListener("click", closeDrawer);
+
+  const sub = (title, ...kids) => h("div", {}, h("div", { class: "eyebrow sub-h" }, title), ...kids);
+  function paperBlock(pid) {
+    const p = D.papers[pid];
+    if (!p) return null;
+    return sub("Source paper",
+      h("div", { style: "font-weight:500" }, p.doi ? h("a", { href: "https://doi.org/" + p.doi, target: "_blank", rel: "noopener" }, p.t) : p.t),
+      h("div", { class: "muted", style: "font-size:12.5px;margin-top:2px" }, `${p.j || ""} ${p.y || ""} · read from ${p.src === "abstract" ? "abstract only" : "full text"}`));
+  }
+  function recordView(id) {
+    if (DS[id]) {
+      const d = DS[id];
+      const sibs = d.co ? (CO[d.co]?.ds || []).filter((x) => x !== id) : [];
+      return [
+        h("h2", {}, d.label),
+        h("div", { class: "chips" }, ...d.mod.map((m) => h("span", { class: "chip mod" }, m)), ...d.ct.map((c) => h("span", { class: "chip ct" }, c)), accChip(d.acc)),
+        h("dl", { class: "kv" },
+          h("dt", {}, "Accessions"), h("dd", {}, d.ids.length ? h("span", { class: "chips" }, ...d.ids.map((x) => x.url ? h("a", { class: "chip acc-id", href: x.url, target: "_blank", rel: "noopener" }, x.id, " ↗") : h("span", { class: "chip acc-id" }, x.id)), d.ver ? h("span", { class: "chip acc acc-open" }, "verified") : null) : h("span", { class: "muted" }, "None stated")),
+          h("dt", {}, "Assay"), h("dd", {}, d.assay || "—"),
+          h("dt", {}, "Organism"), h("dd", {}, d.org),
+          h("dt", {}, "Samples"), h("dd", {}, [d.src, d.n ? fmt(d.n) + " samples" : null, d.np ? fmt(d.np) + " patients" : null].filter(Boolean).join(" · ")),
+          d.cg.length ? [h("dt", {}, "Cancer group"), h("dd", {}, d.cg.join(", "))] : null,
+          d.tx.length ? [h("dt", {}, "Therapy"), h("dd", {}, d.tx.join(", ") + (d.tp.length ? " · " + d.tp.join(", ") : "") + (d.resp ? " · response labels" : ""))] : null,
+          d.nct.length ? [h("dt", {}, "Trials"), h("dd", {}, ...d.nct.map((n, i) => [i ? ", " : "", h("a", { href: "https://clinicaltrials.gov/study/" + n, target: "_blank", rel: "noopener", class: "mono" }, n)]))] : null,
+          h("dt", {}, "Labs"), h("dd", {}, h("div", { style: "display:grid;gap:6px" }, ...d.labs.map(labLink))),
+          h("dt", {}, "Curation"), h("dd", {}, `${d.orig === "regex" ? "Accession scan" : "Read by Claude"} · ${d.conf} confidence`)),
+        d.ev ? sub("Evidence from the paper", h("blockquote", { class: "ev" }, d.ev)) : null,
+        sibs.length ? sub("Same cohort", h("div", { class: "linklist" }, ...sibs.map((x) => h("button", { type: "button", onclick: () => openRecord(x, true) }, `${DS[x]?.label} · ${(DS[x]?.mod || []).join(", ")}`)))) : null,
+        paperBlock(d.p),
+      ].filter(Boolean);
+    }
+    if (RS[id]) {
+      const r = RS[id];
+      return [h("h2", {}, r.name), h("div", { class: "chips" }, h("span", { class: "chip mod" }, r.type), h("span", { class: "chip" }, r.av.replace("_", " "))),
+        h("dl", { class: "kv" }, h("dt", {}, "Identifier"), h("dd", { class: "mono" }, r.ident || "—"),
+          h("dt", {}, "Targets"), h("dd", {}, r.tg.join(", ") || "—"),
+          h("dt", {}, "Labs"), h("dd", {}, h("div", { style: "display:grid;gap:6px" }, ...r.labs.map(labLink)))),
+        r.ev ? sub("Evidence from the paper", h("blockquote", { class: "ev" }, r.ev)) : null, paperBlock(r.p)].filter(Boolean);
+    }
+    if (CO[id]) {
+      const c = CO[id];
+      return [h("h2", {}, c.label), h("div", { class: "chips" }, ...c.mod.map((m) => h("span", { class: "chip mod" }, m)), ...c.ct.map((x) => h("span", { class: "chip ct" }, x))),
+        sub("Datasets in this cohort", h("div", { class: "linklist" }, ...c.ds.map((x) => h("button", { type: "button", onclick: () => openRecord(x, true) }, `${DS[x]?.label} · ${(DS[x]?.mod || []).join(", ")}`)))),
+        sub("Labs", h("div", { style: "display:grid;gap:6px" }, ...c.labs.map(labLink))),
+        paperBlock(c.p)];
+    }
+    if (PI[id]) {
+      const p = PI[id];
+      const ds = D.datasets.filter((d) => d.gen && d.labs.includes(id)).sort((a, b) => (a.orig === "agent" ? 0 : 1) - (b.orig === "agent" ? 0 : 1));
+      const rs = D.resources.filter((r) => r.gen && r.labs.includes(id));
+      return [h("div", { style: "display:flex;gap:14px;align-items:center" }, avatar(id, true), h("div", {}, h("h2", {}, p.name), h("div", { class: "muted" }, `${p.dept} · ${p.site}`))),
+        h("dl", { class: "kv" }, h("dt", {}, "Papers"), h("dd", {}, fmt(p.n_papers)), h("dt", {}, "Datasets"), h("dd", {}, fmt(p.n_datasets)), h("dt", {}, "Resources"), h("dd", {}, fmt(p.n_resources)),
+          h("dt", {}, "Modalities"), h("dd", {}, h("div", { class: "chips" }, ...Object.entries(p.modalities).filter(([k]) => k !== "other").slice(0, 10).map(([k, v]) => h("span", { class: "chip mod" }, `${k} ${v}`)))),
+          h("dt", {}, "Cancer types"), h("dd", {}, h("div", { class: "chips" }, ...Object.entries(p.cancer_types).slice(0, 10).map(([k, v]) => h("span", { class: "chip ct" }, `${k} ${v}`))))),
+        sub(`Datasets (${ds.length})`, h("div", { class: "linklist" }, ...ds.slice(0, 40).map((d) => h("button", { type: "button", onclick: () => openRecord(d.id, true) }, `${d.label} · ${d.mod.join(", ")}`)))),
+        rs.length ? sub(`Resources (${rs.length})`, h("div", { class: "linklist" }, ...rs.slice(0, 40).map((r) => h("button", { type: "button", onclick: () => openRecord(r.id, true) }, `${r.name} · ${r.type}`)))) : null,
+        h("button", { class: "btn ghost", type: "button", onclick: () => { closeDrawer(); state.sel = { lab: new Set([p.name]) }; showTab("explore", true); renderExplore(); } }, "Show this lab's datasets")].filter(Boolean);
+    }
+    return null;
+  }
+
+  // ---------- command palette ----------
+  let pItems = [], pIdx = 0, pIndex = null;
+  function buildIndex() {
+    pIndex = [
+      ...D.pis.map((p) => ({ id: p.id, t: p.name, k: "Lab", hay: (p.name + " " + p.dept).toLowerCase() })),
+      ...D.cohorts.map((c) => ({ id: c.id, t: c.label, k: "Cohort", hay: (c.label + " " + c.ct.join(" ") + " " + c.mod.join(" ")).toLowerCase() })),
+      ...D.resources.filter((r) => r.gen).map((r) => ({ id: r.id, t: r.name, k: r.type, hay: (r.name + " " + (r.ident || "") + " " + r.tg.join(" ")).toLowerCase() })),
+      ...D.datasets.filter((d) => d.gen).map((d) => ({ id: d.id, t: d.label, k: d.mod[0] || "Dataset", hay: (d.label + " " + d.ids.map((x) => x.id).join(" ") + " " + d.cg.join(" ") + " " + d.mod.join(" ")).toLowerCase(), agent: d.orig === "agent" })),
+    ];
+  }
+  function initPalette() {
+    $("#kbtn").addEventListener("click", openPalette);
+    document.addEventListener("keydown", (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); $("#palette").hidden ? openPalette() : closePalette(); }
+      else if (e.key === "/" && !/input|textarea|select/i.test(document.activeElement?.tagName || "")) { e.preventDefault(); openPalette(); }
+      else if (e.key === "Escape") { if (!$("#palette").hidden) closePalette(); else if (!$("#drawer").hidden) closeDrawer(); }
+    });
+    $("#p-scrim").addEventListener("click", closePalette);
+    $("#p-input").addEventListener("input", searchPalette);
+    $("#p-input").addEventListener("keydown", (e) => {
+      if (e.key === "ArrowDown") { e.preventDefault(); pIdx = Math.min(pIdx + 1, pItems.length - 1); paintPalette(); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); pIdx = Math.max(pIdx - 1, 0); paintPalette(); }
+      else if (e.key === "Enter" && pItems[pIdx]) { e.preventDefault(); openRecord(pItems[pIdx].id, true); }
+    });
+  }
+  function openPalette() { if (!D) return; pIndex ||= (buildIndex(), pIndex); $("#palette").hidden = false; $("#p-scrim").hidden = false; $("#p-input").value = ""; searchPalette(); $("#p-input").focus(); }
+  function closePalette() { $("#palette").hidden = true; $("#p-scrim").hidden = true; }
+  function searchPalette() {
+    const q = $("#p-input").value.trim().toLowerCase();
+    const terms = q.split(/\s+/).filter(Boolean);
+    pItems = (terms.length ? pIndex.filter((x) => terms.every((t) => x.hay.includes(t))) : pIndex.filter((x) => x.k === "Lab" || x.k === "Cohort"))
+      .sort((a, b) => (b.t.toLowerCase().startsWith(q) ? 1 : 0) - (a.t.toLowerCase().startsWith(q) ? 1 : 0) || (b.agent ? 1 : 0) - (a.agent ? 1 : 0))
+      .slice(0, 14);
+    pIdx = 0;
+    paintPalette();
+  }
+  function paintPalette() {
+    $("#p-list").replaceChildren(...(pItems.length ? pItems.map((x, i) => h("li", { role: "option", "aria-selected": String(i === pIdx), onclick: () => openRecord(x.id, true), onmousemove: () => { if (pIdx !== i) { pIdx = i; paintPalette(); } } },
+      x.k === "Lab" ? avatar(x.id) : null, h("span", { class: "t" }, x.t), h("span", { class: "k" }, x.k))) : [h("li", { class: "muted" }, "No matches")]));
+    $("#p-list").children[pIdx]?.scrollIntoView({ block: "nearest" });
+  }
+
+  // ---------- corrections (db) ----------
+  let db = null, user = null, canWrite = null, unwatch = null;
+  async function initCorrections() {
+    try {
+      [db, user] = await Promise.all([window.claude?.use?.("db") ?? null, window.claude?.use?.("user") ?? null]);
+      canWrite = user ? await user.can("data.write") : null;
+      if (currentId) $("#d-body").lastChild.replaceWith(correctionBlock(currentId));
+    } catch { db = null; }
+  }
+  function correctionBlock(id) {
+    const wrap = h("div", { class: "fix", id: "fix" });
+    if (!db) return wrap;
+    wrap.append(h("div", { class: "eyebrow" }, "Corrections and additions"), h("div", { class: "prior", id: "prior" }));
+    if (canWrite === false) return wrap;
+    const kind = h("select", { class: "field", id: "fix-kind", "aria-label": "Type of correction" },
+      h("option", { value: "correct" }, "Correct this entry"), h("option", { value: "add_dataset" }, "Add a dataset from this lab or paper"),
+      h("option", { value: "not_ours" }, "Not generated by this lab"), h("option", { value: "access" }, "Access has changed"));
+    const note = h("textarea", { class: "field", id: "fix-note", rows: "3", placeholder: "What should change? Include accessions, sample counts or access details." });
+    const msg = h("div", { class: "toast", "aria-live": "polite" });
+    const send = h("button", { class: "btn", type: "button", onclick: async () => {
+      const text = note.value.trim();
+      if (!text) { msg.textContent = "Write the correction first."; return; }
+      send.disabled = true;
+      try {
+        await db.collection("corrections").add({ target: id, kind: kind.value, note: text.slice(0, 4000), at: new Date().toISOString(), by: (await user?.id?.()) || null, status: "open" });
+        note.value = "";
+        msg.textContent = "Sent. The curator will review it.";
+      } catch (e) {
+        msg.textContent = e?.code === "invalid_argument" ? "You can view this catalog but not submit corrections." : "Could not send. Try again in a moment.";
+      } finally { send.disabled = false; }
+    } }, "Send correction");
+    wrap.append(kind, note, h("div", { style: "display:flex;gap:12px;align-items:center" }, send, msg));
+    return wrap;
+  }
+  function watchCorrections(id) {
+    unwatch?.();
+    unwatch = null;
+    if (!db) return;
+    unwatch = db.collection("corrections").where("target", "==", id).onSnapshot((snap) => {
+      const box = $("#prior");
+      if (!box) return;
+      box.replaceChildren(...snap.docs.map((doc) => { const c = doc.data(); return h("div", {}, h("b", {}, String(c.kind).replace("_", " ")), ` · ${String(c.at).slice(0, 10)} · ${c.status}: `, c.note); }));
+    }, () => {});
+  }
+
+  // ---------- ask (sample + page tools) ----------
+  const SUGGESTIONS = [
+    "Which labs have single-cell data on immunotherapy-treated melanoma, and which of it is open access?",
+    "List multi-modal cohorts in breast cancer and the labs that hold them.",
+    "Which spatial transcriptomics datasets exist, by cancer type?",
+    "Suggest two cross-lab integration projects in lung cancer, with the datasets each lab would bring.",
+    "What software tools have the Getz and Pinello labs released?",
+    "How much of the catalog's sequencing data is controlled access or only available on request?",
+  ];
+  const slimDs = (d) => ({ id: d.id, label: d.label, modalities: d.mod, cancer_types: d.ct, cancer_group: d.cg, organism: d.org, n_samples: d.n,
+    access: d.acc, accessions: d.ids.map((x) => x.id), therapy: d.tx, cohort: d.co, labs: d.sr.map((x) => PI[x]?.name),
+    paper: D.papers[d.p]?.t?.slice(0, 120), year: D.papers[d.p]?.y, curation: d.orig });
+  const has = (arr, q) => !q || arr.some((v) => String(v).toLowerCase().includes(String(q).toLowerCase()));
+  const TOOLS = [
+    { name: "catalog_stats", description: "Headline counts: labs, papers, datasets by modality and access, resources, cohorts.", execute: () => D.stats },
+    { name: "search_datasets", description: "Filter datasets (generated in study). All fields optional substring matches. Returns up to 25 slim records with ids.",
+      inputSchema: { type: "object", properties: { modality: { type: "string" }, cancer_type: { type: "string" }, lab: { type: "string", description: "PI surname" }, access: { type: "string", enum: ["open", "controlled", "upon_request", "not_stated"] }, therapy: { type: "string" }, text: { type: "string" }, limit: { type: "number" } } },
+      execute: (a) => {
+        const rows = D.datasets.filter((d) => d.gen && has(d.mod, a.modality) && has(d.ct.concat(d.cg), a.cancer_type) && has(d.labs.map((x) => PI[x]?.name), a.lab) &&
+          (!a.access || d.acc === a.access) && has(d.tx, a.therapy) &&
+          (!a.text || String(a.text).toLowerCase().split(/\s+/).every((t) => (d.label + " " + d.assay + " " + d.ev + " " + (D.papers[d.p]?.t || "")).toLowerCase().includes(t))));
+        return { total: rows.length, results: rows.slice(0, Math.min(Number(a.limit) || 25, 40)).map(slimDs) };
+      } },
+    { name: "get_record", description: "Full record for one id: DS- dataset, RS- resource, CO- cohort, or PI- lab.",
+      inputSchema: { type: "object", properties: { id: { type: "string" } }, required: ["id"] },
+      execute: (a) => { const id = String(a.id); if (DS[id]) return { ...slimDs(DS[id]), evidence: DS[id].ev, assay: DS[id].assay };
+        if (RS[id]) return RS[id]; if (CO[id]) return { ...CO[id], labs: CO[id].labs.map((x) => PI[x]?.name) }; if (PI[id]) return PI[id]; throw new Error("No record " + id); } },
+    { name: "find_cohorts", description: "Multi-modal cohorts (same patients/samples, 2+ modalities), optional cancer type / lab / modality filter.",
+      inputSchema: { type: "object", properties: { cancer_type: { type: "string" }, lab: { type: "string" }, modality: { type: "string" } } },
+      execute: (a) => { const rows = D.cohorts.filter((c) => has(c.ct, a.cancer_type) && has(c.labs.map((x) => PI[x]?.name), a.lab) && has(c.mod, a.modality));
+        return { total: rows.length, results: rows.slice(0, 25).map((c) => ({ id: c.id, label: c.label, modalities: c.mod, cancer_types: c.ct, labs: c.labs.map((x) => PI[x]?.name), datasets: c.ds })) }; } },
+    { name: "integration_opportunities", description: "Cancer types where several labs hold complementary modalities; pairs with co=false have never co-authored.",
+      inputSchema: { type: "object", properties: { cancer_type: { type: "string" } } },
+      execute: (a) => D.opportunities.filter((o) => has([o.ct], a.cancer_type)).slice(0, 8).map((o) => ({ cancer_type: o.ct, n_labs: o.n,
+        labs: Object.fromEntries(Object.entries(o.labs).map(([k, v]) => [PI[k]?.name, v])), pairs: o.pairs.map((p) => ({ a: PI[p.a]?.name, b: PI[p.b]?.name, complementary: p.comp, already_coauthors: p.co })) })) },
+    { name: "search_resources", description: "Resources the labs created (cell lines, models, compounds, constructs, software).",
+      inputSchema: { type: "object", properties: { type: { type: "string" }, text: { type: "string", description: "name, target gene or identifier" }, lab: { type: "string" } } },
+      execute: (a) => { const rows = D.resources.filter((r) => r.gen && has([r.type], a.type) && has(r.labs.map((x) => PI[x]?.name), a.lab) &&
+          (!a.text || (r.name + " " + (r.ident || "") + " " + r.tg.join(" ")).toLowerCase().includes(String(a.text).toLowerCase())));
+        return { total: rows.length, results: rows.slice(0, 30).map((r) => ({ id: r.id, name: r.name, type: r.type, identifier: r.ident, targets: r.tg, availability: r.av, labs: r.labs.map((x) => PI[x]?.name) })) }; } },
+    { name: "lab_profile", description: "Profile of one lab by PI surname: groups, counts, modalities, cancer types, access breakdown.",
+      inputSchema: { type: "object", properties: { name: { type: "string" } }, required: ["name"] },
+      execute: (a) => { const p = D.pis.find((x) => x.name.toLowerCase().includes(String(a.name).toLowerCase())); if (!p) throw new Error("No lab matching " + a.name); return p; } },
+  ];
+  const RULES = `You answer questions about the Cancer Data Collaboratory, a catalog of datasets and reusable resources from the labs of the Krantz Family Center for Cancer Research (KFCCR), part of the Mass General Brigham Cancer Institute, including KFCCR labs in MGB Pathology (papers 2021-2026). Use the tools to look things up; never invent datasets, accessions or labs. Cite every dataset, cohort, resource or lab you mention by its id in square brackets, like [DS-1a2b3c4d] or [PI-ab12cd]. If nothing matches, say so plainly. Entries with curation "regex" come from an automatic accession scan and lack modality detail; say so when it matters. Keep answers short: a sentence or two, then a bulleted list when listing items. Use plain text with "- " bullets and **bold** only.`;
+  let sample = null, turns = [], ctl = null;
+  function initAsk() {
+    $("#suggest").append(...SUGGESTIONS.map((q) => h("button", { type: "button", onclick: () => { $("#ask-input").value = q; ask(); } }, q)));
+    $("#msgs").append(h("div", { class: "msg bot" }, h("p", {}, "Ask anything about the catalog. Answers link to the records they draw on.")));
+    Promise.resolve(window.claude?.use?.("sample") ?? null).then(async (smp) => {
+      sample = smp;
+      const lim = smp ? await smp.limits().catch(() => null) : null;
+      if (!smp || !lim?.tools) disableAsk();
+    }).catch(disableAsk);
+  }
+  function disableAsk() {
+    sample = null;
+    $("#composer").replaceChildren(h("div", { class: "unavailable" }, "Asking questions in plain language is not available on this site yet."));
+    $("#suggest").hidden = true;
+  }
+  $("#composer").addEventListener("submit", (e) => { e.preventDefault(); ask(); });
+  $("#ask-input").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); ask(); } });
+  $("#ask-stop").addEventListener("click", () => ctl?.abort());
+  function renderAnswer(el, text) {
+    const nodes = [];
+    let ul = null;
+    const inline = (line) => {
+      const out = [];
+      for (const part of line.split(/(\*\*[^*]+\*\*|\[(?:DS|RS|CO|PI)-[0-9a-f]{6,8}\])/g)) {
+        if (!part) continue;
+        const id = part.match(/^\[((?:DS|RS|CO|PI)-[0-9a-f]{6,8})\]$/);
+        if (id) out.push(h("button", { class: "idlink", type: "button", onclick: () => openRecord(id[1], true) }, id[1]));
+        else if (/^\*\*.+\*\*$/.test(part)) out.push(h("strong", {}, part.slice(2, -2)));
+        else out.push(part);
+      }
+      return out;
+    };
+    for (const raw of text.split("\n")) {
+      const line = raw.trimEnd();
+      if (/^\s*[-*] /.test(line)) { if (!ul) { ul = h("ul", {}); nodes.push(ul); } ul.append(h("li", {}, ...inline(line.replace(/^\s*[-*] /, "")))); }
+      else { ul = null; if (line.trim()) nodes.push(h("p", {}, ...inline(line.replace(/^#+\s*/, "")))); }
+    }
+    el.replaceChildren(...nodes);
+  }
+  async function ask() {
+    const q = $("#ask-input").value.trim();
+    if (!q || !sample || ctl) return;
+    showTab("ask", true);
+    $("#ask-input").value = "";
+    $("#msgs").append(h("div", { class: "msg user" }, q));
+    const bot = h("div", { class: "msg bot" }, h("p", { class: "muted" }, "Thinking…"));
+    const trace = h("div", { class: "trace" });
+    $("#msgs").append(bot, trace);
+    $("#msgs").scrollTop = $("#msgs").scrollHeight;
+    turns.push({ role: "user", content: q });
+    turns = turns.slice(-10);
+    ctl = new AbortController();
+    $("#ask-send").disabled = true;
+    $("#ask-stop").hidden = false;
+    const tools = TOOLS.map((t) => ({ ...t, execute: (input) => { trace.textContent = `looking up: ${t.name.replace(/_/g, " ")}`; return t.execute(input || {}); } }));
+    try {
+      const { text, truncated } = await sample([{ role: "user", content: RULES }, ...turns], {
+        tools, signal: ctl.signal,
+        onText: ({ text }) => { renderAnswer(bot, text); $("#msgs").scrollTop = $("#msgs").scrollHeight; },
+      });
+      turns.push({ role: "assistant", content: text });
+      trace.textContent = truncated ? "Answer cut short. Ask for less at a time." : "";
+    } catch (e) {
+      if (e?.text) renderAnswer(bot, e.text); else bot.replaceChildren();
+      const copy = { cancelled: "", rate_limited: "Too many questions at once. Wait a moment, then ask again.", refused: "Claude declined that question. Try rephrasing it.",
+        not_granted: "Asking Claude was not allowed for this page.", sampling_disabled: "Claude is not available for this account.", prompt_too_large: "That conversation got too long. Reload to start fresh." };
+      trace.textContent = e?.code in copy ? copy[e.code] : "Something went wrong. Ask again.";
+      if (e?.code === "not_granted" || e?.code === "sampling_disabled" || e?.code === "tools_unavailable") disableAsk();
+      turns.pop();
+    } finally {
+      ctl = null;
+      $("#ask-send").disabled = false;
+      $("#ask-stop").hidden = true;
+    }
+  }
+})();
+</script>

@@ -261,6 +261,10 @@ defaults:
       path: "assets"
     values:
       sitemap: false
+  - scope:
+      path: "collaboratory"
+    values:
+      sitemap: false
 
 sass:
   style: compressed
