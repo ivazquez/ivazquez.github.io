@@ -676,8 +676,9 @@ footer.site .wrap { display: flex; justify-content: space-between; gap: 16px; fl
     const research = st.papers - (st.papers_reviews || 0);
     if (st.papers_extracted >= research) {
       $("#progress").hidden = false;
-      $("#progress-bar").style.width = "100%";
-      $("#progress-text").textContent = `${Math.round((100 * st.papers_extracted) / st.papers)}% of papers read in depth: all ${fmt(research)} research papers (the other ${fmt(st.papers_reviews || 0)} are reviews).`;
+      const ftPct = Math.round((100 * st.papers_fulltext) / st.papers);
+      $("#progress-bar").style.width = ftPct + "%";
+      $("#progress-text").textContent = `Full text read for ${ftPct}% of papers; the rest from abstracts.`;
     } else if (st.papers_extracted < st.papers) {
       const pct = Math.round((100 * st.papers_extracted) / st.papers);
       $("#progress").hidden = false;
@@ -1038,7 +1039,7 @@ footer.site .wrap { display: flex; justify-content: space-between; gap: 16px; fl
     $("#d-kind").textContent = "Update";
     $("#d-id").textContent = last;
     $("#d-body").replaceChildren(h("h2", {}, "What's new this week"),
-      h("div", { class: "muted" }, `${papers.length} new papers from KFCCR labs, read in depth and added to the catalog.`),
+      h("div", { class: "muted" }, `${papers.length} new papers from KFCCR labs, added to the catalog.`),
       h("div", {}, ...papers.map(([pid, p]) => h("div", { class: "wn-paper" },
         h("div", { class: "t" }, p.doi ? h("a", { href: "https://doi.org/" + p.doi, target: "_blank", rel: "noopener" }, p.t) : p.t),
         h("div", { class: "muted", style: "font-size:12.5px" }, `${p.j || ""} ${p.y || ""}`),
