@@ -269,6 +269,11 @@ ninja.data = [{
           description: "2025 DF/HCC YES for CURE Program",
           section: "Projects",handler: () => {
               window.location.href = "/projects/oprah_nkera/";
+            },},{id: "projects-pieter-geukema",
+          title: 'Pieter Geukema',
+          description: "Master&#39;s Student",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/pieter_geukema/";
             },},{id: "projects-rhea-malhotra",
           title: 'Rhea Malhotra',
           description: "2022 MSK Computational Biology Summer Program",
