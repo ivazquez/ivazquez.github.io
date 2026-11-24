@@ -11,3 +11,7 @@ assets/libs/
 node_modules/
 vendor
 .idea
+# Raw photos: canonical copies live in Google Drive, not in this public repo.
+# Local working copies only; the README documents the convention.
+_originals/**
+!_originals/README.md
