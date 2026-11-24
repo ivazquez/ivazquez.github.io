@@ -287,6 +287,11 @@ ninja.data = [{
           description: "Administrative Director",
           section: "Projects",handler: () => {
               window.location.href = "/projects/susan_smith/";
+            },},{id: "projects-susana-martín-gonzález",
+          title: 'Susana Martín-González',
+          description: "Undergraduate Student",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/susana_martin-gonzalez/";
             },},{id: "projects-vrishank-chandrasekhar",
           title: 'Vrishank Chandrasekhar',
           description: "Undergraduate Student",
